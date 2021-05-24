@@ -426,6 +426,11 @@ class Factory:
 
         return cyl
 
+    def create_rotor(self, position):
+        
+        pass
+
+
     def create_general_bolt(self):
         local = (0,0,0)
         bit_type = self.bit_type
@@ -635,6 +640,12 @@ class Factory:
             mat.metallic = 0.9
             mat.specular_intensity = 0.7
             mat.roughness = 0.1
+        elif part == "Magnet":           
+            mat.diffuse_color = (0, 0, 0, 1)
+            mat.specular_color = (0, 0, 0.38)    
+            mat.metallic = 0.1
+            mat.specular_intensity = 0.5
+            mat.roughness = 0.7
 
         # Assign it to object
         if obj.data.materials:

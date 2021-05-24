@@ -44,9 +44,30 @@ class Motor_Creator(Factory):
         cylinder_x = init_x
         cylinder_y = init_y
         cylinder_z = init_z + cylinder_d/2 + sub_long    
-
+        
         cyl = self.create_motor_main((cylinder_x, cylinder_y, cylinder_z),main_hight,main_width,main_long)
         cyl.name = 'Motor'
+
+        cyl_2 = self.create_motor_main((cylinder_x, cylinder_y, cylinder_z+0.2),main_hight,main_width,main_long)
+
+        bpy.ops.object.select_all(action='DESELECT')
+        cyl_2.select_set(True)
+        bpy.ops.transform.resize(value=(0.9, 0.9, 1))
+        self.diff_obj(cyl,cyl_2)
+
+        cyl_3 = self.create_motor_main((cylinder_x, cylinder_y, cylinder_z+0.2),main_hight,main_width,main_long)
+        bpy.ops.object.select_all(action='DESELECT')
+        cyl_3.select_set(True)
+        bpy.ops.transform.resize(value=(0.91, 0.75, 1.1))
+        self.diff_obj(cyl_2,cyl_3)
+        cyl_3.select_set(True)
+        bpy.ops.object.delete()
+
+        cyl_2.select_set(True)
+        bpy.ops.transform.resize(value=(1, 1, 0.6))
+        cyl_2.location = (cylinder_x, cylinder_y, cylinder_z-0.5)
+        cyl_2.name = "Magnet"
+        self.save_modell(cyl_2)
 
         # Add sub cylinder
         sub_cylinder_r = sub_radius/2
@@ -81,19 +102,17 @@ class Motor_Creator(Factory):
         bpy.ops.object.delete()
 
         #Combine the Objects
-        bpy.ops.object.mode_set(mode='OBJECT')
 
-        bpy.context.view_layer.objects.active = cyl
-        cyl.select_set(True)        
-        sub_cyl.select_set(True)
-        bpy.ops.object.join()
+        self.combine_all_obj(cyl,[sub_cyl])
 
         if self.color_render:
             self.rend_color(cyl, "Metall")
+            self.rend_color(cyl_2, "Magnet")
         cyl.name = "Bottom"
         cyl["category_id"] = 0
 
         self.save_modell(cyl)
+        self.combine_all_obj(cyl,[cyl_2])
         return cyl
 
 
@@ -132,8 +151,11 @@ class Motor_Creator(Factory):
         ub_lz = init_z+ sub_long+ main_long - thickness *size/2 + self.BOLT_LENGTH/2
 
         cube_1 = self.create_motor_main((ub_lx,ub_ly,ub_lz),main_hight,main_width,cuboid_long)
-
         cube_1.name = 'cube1'
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA/2, depth=50, location=(0,0,0))
+        hole = bpy.context.object
+        self.diff_obj(cube_1,hole)
+
 
 
         ##Part 2
@@ -149,6 +171,8 @@ class Motor_Creator(Factory):
         bpy.ops.transform.resize(value=(height, width, p2_length))
 
         cube_2 = bpy.context.object
+        self.diff_obj(cube_2,hole)
+
 
         ##Part 3
         height = self.BOARD_THICKNESS
@@ -163,6 +187,9 @@ class Motor_Creator(Factory):
         bpy.ops.transform.resize(value=(height, width, p3_length))
 
         cube_3 = bpy.context.object
+        self.diff_obj(cube_3,hole)
+        hole.select_set(True)
+        bpy.ops.object.delete()
 
         #Create Engergy part
         convex = self.create_4_convex_cyl()
@@ -335,13 +362,8 @@ class Motor_Creator(Factory):
     def create_4_convex_cyl(self):
         #Four convex cylinder and side board
 
-        init_x = self.init_x
-        init_y = self.init_y 
-        init_z = self.init_z
 
         size = 1
-        main_hight = self.BOTTOM_HEIGHT * size
-        main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
 
         sub_long = self.sub_bottom_length * size
@@ -364,22 +386,24 @@ class Motor_Creator(Factory):
         cy4_z = length_4/2
         cy5_z = length_5/2
         #Create 4 Covex cylinder
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=length_1, location=(0,0,four_cyl_z+cy1_z))
-        cyl_1 = bpy.context.object
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step, depth=length_2, location=(0,0,four_cyl_z+cy2_z))
-        cyl_2 = bpy.context.object
+        
+        #bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=length_1, location=(0,0,four_cyl_z+cy1_z))
+        cyl_1 = self.create_ring((0,0,four_cyl_z+cy1_z), length_1, self.FOUR_CYL_DIA, self.BOARD_THICKNESS)#bpy.context.object
+        #bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step, depth=length_2, location=(0,0,four_cyl_z+cy2_z))
+        cyl_2 = self.create_ring((0,0,four_cyl_z+cy2_z), length_2, self.FOUR_CYL_DIA- step, self.BOARD_THICKNESS)
 
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA- step *2, depth= length_3, location=(0,0,four_cyl_z+cy3_z))
-        cyl_3 = bpy.context.object
+        #bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA- step *2, depth= length_3, location=(0,0,four_cyl_z+cy3_z))
+        cyl_3 = self.create_ring((0,0,four_cyl_z+cy3_z), length_3, self.FOUR_CYL_DIA- step *2, self.BOARD_THICKNESS)
 
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step *3, depth=length_4, location=(0,0,four_cyl_z+cy4_z))
-        cyl_4 = bpy.context.object
+        #bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step *3, depth=length_4, location=(0,0,four_cyl_z+cy4_z))
+        cyl_4 = self.create_ring((0,0,four_cyl_z+cy4_z), length_4, self.FOUR_CYL_DIA- step *3, self.BOARD_THICKNESS)
 
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step *4, depth=length_5, location=(0,0,four_cyl_z+cy5_z))
-        cyl_5 = bpy.context.object
+        #bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step *4, depth=length_5, location=(0,0,four_cyl_z+cy5_z))
+        #cyl_5 = self.create_ring((0,0,four_cyl_z+cy5_z), length_5, self.FOUR_CYL_DIA- step *4, self.BOARD_THICKNESS)
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA - step *3, depth=0.2, location=(0,0,four_cyl_z+length_4-0.1))
+        cover = bpy.context.object
 
-
-        up = self.combine_all_obj(cyl_1,[cyl_2,cyl_3,cyl_4,cyl_5])
+        up = self.combine_all_obj(cyl_1,[cyl_2,cyl_3,cyl_4,cover])
 
         if self.color_render:
             self.rend_color(up, "Plastic")
@@ -414,7 +438,7 @@ class Type_A(Motor_Creator):
     C2_LENGTH = 2.7
     C3_LENGTH = 1.1
     C4_LENGTH = 0.8
-    C5_LENGTH = -6.4
+    C5_LENGTH = 6.4
 
     
     param = []
@@ -797,16 +821,17 @@ class Type_A(Motor_Creator):
                 bpy.ops.object.delete()
 
                 ### Create inner gear
-                in_gear_s = self.create_internal_gear((position[0], position[1], position[2]-0.3*length), length*0.4, radius*0.8, 40, thickness=0.7)
-                in_gear_l = self.create_internal_gear(position, length, radius*0.3, 10, thickness=0.3)
+                in_gear_s = self.create_internal_gear((position[0], position[1], position[2]-0.3*length), length*0.4, radius*0.6, 40, thickness=0.7)
+                in_gear_l = self.create_internal_gear(position, length*0.8, radius*0.2, 10, thickness=0.3)
                 in_gear = self.combine_all_obj(in_gear_s,[in_gear_l])
                 bpy.context.view_layer.objects.active = in_gear
                 bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
                 in_gear.name = "Lower_Inner_Gear"
                 in_gear.location = (position[0], position[1]+0.15*length, position[2])
+                self.rotate_object(in_gear)
                 self.save_modell(in_gear)
-                #in_gear.select_set(True)
-                #bpy.ops.object.delete()
+                in_gear.select_set(True)
+                bpy.ops.object.delete()
 
                
             part = self.combine_all_obj(out_cyl,[in_cyl])
@@ -880,16 +905,17 @@ class Type_A(Motor_Creator):
                 bpy.ops.object.delete()
 
                 ### Create inner gear
-                in_gear_s = self.create_internal_gear((position[0], position[1], position[2]+0.7*length), length*0.8, radius*0.8, 30, thickness=0.8)
-                in_gear_l = self.create_ring(position_in, inner_length, radius*0.25, 0.2)
+                in_gear_s = self.create_internal_gear((position[0], position[1], position[2]+0.5*length), 0.8*length, radius*0.7, 30, thickness=0.8)
+                in_gear_l = self.create_ring(position, inner_length, radius*0.25, 0.2)
                 in_gear = self.combine_all_obj(in_gear_s,[in_gear_l])
                 bpy.context.view_layer.objects.active = in_gear
                 bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
                 in_gear.name = "Upper_Inner_Gear"
                 in_gear.location = (position[0], position[1]-0.35*length, position[2])
+                self.rotate_object(in_gear)
                 self.save_modell(in_gear)
-                #in_gear.select_set(True)
-                #bpy.ops.object.delete()
+                in_gear.select_set(True)
+                bpy.ops.object.delete()
 
             part = self.combine_all_obj(cly_1,[cly_2,cly_3]) 
             
@@ -1310,6 +1336,11 @@ class Type_A(Motor_Creator):
             
         board = self.create_outer_board(length_relativ)  
         self.rotate_object(board)
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA-0.2, depth=50, location=(0,0,0))
+        hole = bpy.context.object
+        self.diff_obj(board,hole)
+        hole.select_set(True)
+        bpy.ops.object.delete()
         
         up1, bolt_list_1 = self.create_up(length_relativ)
         self.rotate_object(up1)

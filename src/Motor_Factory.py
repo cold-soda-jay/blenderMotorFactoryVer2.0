@@ -524,7 +524,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         en_part = creator.create_en_part()
         #Create Upper part
         upper_part = creator.create_upper_part()
-        obj_list=[upper_part,en_part]
+        obj_list=[upper_part,en_part, creator.ROTOR, creator.IN_GEAR_1, creator.IN_GEAR_2]
         
         # Combine all created parts
         motor = creator.combine_all_obj(bottom,obj_list)     
@@ -563,6 +563,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         okay.layout.label(text=text)
     
     def test(self,creator):
+        #creator.create_rotor()
         #creator.create_internal_gear((0,0,20), 2.6, 0.8,number = 10)
         pass
 

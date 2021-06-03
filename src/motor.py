@@ -64,7 +64,7 @@ class Motor_Creator(Factory):
         bpy.ops.object.delete()
 
         cyl_2.select_set(True)
-        bpy.ops.transform.resize(value=(1, 1, 0.6))
+        bpy.ops.transform.resize(value=(1, 1, 0.75))
         cyl_2.location = (cylinder_x, cylinder_y, cylinder_z-0.5)
         cyl_2.name = "Magnet"
         self.save_modell(cyl_2)
@@ -101,6 +101,11 @@ class Motor_Creator(Factory):
         inner_cyl.select_set(True)
         bpy.ops.object.delete()
 
+        rotor = self.create_rotor()
+        self.save_modell(rotor)
+        self.ROTOR = rotor
+        #rotor.select_set(True)
+        #bpy.ops.object.delete()
         #Combine the Objects
 
         self.combine_all_obj(cyl,[sub_cyl])
@@ -829,9 +834,11 @@ class Type_A(Motor_Creator):
                 in_gear.name = "Lower_Inner_Gear"
                 in_gear.location = (position[0], position[1]+0.15*length, position[2])
                 self.rotate_object(in_gear)
+                self.rend_color(in_gear, "Gear")
                 self.save_modell(in_gear)
-                in_gear.select_set(True)
-                bpy.ops.object.delete()
+                self.IN_GEAR_1 = in_gear
+                #in_gear.select_set(True)
+                #bpy.ops.object.delete()
 
                
             part = self.combine_all_obj(out_cyl,[in_cyl])
@@ -911,11 +918,13 @@ class Type_A(Motor_Creator):
                 bpy.context.view_layer.objects.active = in_gear
                 bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
                 in_gear.name = "Upper_Inner_Gear"
-                in_gear.location = (position[0], position[1]-0.35*length, position[2])
+                in_gear.location = (position[0], position[1]-0.3*length, position[2])
                 self.rotate_object(in_gear)
                 self.save_modell(in_gear)
-                in_gear.select_set(True)
-                bpy.ops.object.delete()
+                self.rend_color(in_gear, "Gear")
+                #in_gear.select_set(True)
+                #bpy.ops.object.delete()
+                self.IN_GEAR_2 = in_gear
 
             part = self.combine_all_obj(cly_1,[cly_2,cly_3]) 
             

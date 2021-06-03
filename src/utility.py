@@ -103,6 +103,62 @@ class Factory:
     temp_save = False
     bolt_roate_angle_list = []
     general_Bolt = None
+    IN_GEAR_1 = None
+    IN_GEAR_2 = None
+    ROTOR = None
+
+    Materia_Tables = {
+                "Metall":{"diffuse_color": (0.3, 0.3, 0.3, 1),
+                           "metallic": 0.8,
+                           "roughness":0.4,
+                           "specular_intensity":0.9
+                        },
+                "Energy": {"diffuse_color": (0.781, 0.775, 0.308, 1),
+                           "metallic": 0,
+                           "roughness":0.5,
+                           "specular_intensity":0.5
+                        },
+                "Plastic": {"diffuse_color": (0, 0, 0, 1),
+                           "metallic": 0.4,
+                           "roughness":0.7,
+                           "specular_intensity":0.5
+                        },
+                "Bit": {"diffuse_color": (0.9, 0.9, 0.9, 1),
+                           "metallic": 0.9,
+                           "roughness":0.1,
+                           "specular_intensity":0.7
+                        },
+                "Magnet": {"diffuse_color": (0, 0, 0.1, 1),
+                           "metallic": 0.1,
+                           "roughness":1,
+                           "specular_intensity":0.5
+                        },
+                "Gear": {"diffuse_color": (1, 1, 1, 1),
+                           "metallic": 0.1,
+                           "roughness":0.7,
+                           "specular_intensity":0.5
+                        },
+                "Stab": {"diffuse_color": (0.41, 0.41, 0.41, 1),
+                           "metallic": 0.9,
+                           "roughness":0.1,
+                           "specular_intensity":0.7
+                        },
+                "Bronzen": {"diffuse_color": (0.184468, 0.0759916, 0.0227221, 1),
+                           "metallic": 0.844,
+                           "roughness":0.351,
+                           "specular_intensity":0.713
+                        },
+                "Wire": {"diffuse_color": (0.940392, 0.266226, 0.00539573, 1),
+                           "metallic": 1,
+                           "roughness":0.245,
+                           "specular_intensity":0.5
+                        },
+                "Fence": {"diffuse_color": (0.259799, 0.259799, 0.259799, 1),
+                           "metallic": 0.85,
+                           "roughness": 0.85,
+                           "specular_intensity":0.5
+                        },
+            }
 
     def __init__(self,factory):
         """initiate variables.
@@ -143,6 +199,9 @@ class Factory:
             "mf_Bolt_Orientation",
             
         ]
+        self.IN_GEAR_1 = None
+        self.IN_GEAR_2 = None
+        self.ROTOR = None
         self.save_path = factory.save_path
         self.temp_save = factory.temp_save
         self.id_Nr = factory.id_Nr     
@@ -426,10 +485,75 @@ class Factory:
 
         return cyl
 
-    def create_rotor(self, position):
-        
-        pass
+    def create_rotor(self):
+        init_x = 0
+        init_y = 0
+        init_z = 0
 
+        stab_rad = 0.15
+        mid_rad = 0.4
+        roter_rad = 1.2
+        stab_len = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH + self.C5_LENGTH 
+        mid_len = 2
+        roter_len = (self.BOTTOM_HEIGHT+self.sub_bottom_length)*1.2
+
+        bpy.ops.mesh.primitive_cylinder_add(radius=stab_rad, depth=stab_len, location=(init_x, init_y, init_z+stab_len/2+0.5))
+        stab = bpy.context.object
+        self.rend_color(stab, "Stab")
+
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.mesh.primitive_cylinder_add(radius=mid_rad, depth=mid_len, location=(init_x, init_y, init_z+roter_len+mid_len/2+2))
+        mid = bpy.context.object
+        bpy.context.view_layer.objects.active = mid
+        bpy.ops.object.modifier_add(type='BEVEL')
+        bpy.context.object.modifiers["Bevel"].offset_type = 'OFFSET'
+        bpy.context.object.modifiers["Bevel"].width_pct = 0.35#0.75*roter_rad*2
+        bpy.context.object.modifiers["Bevel"].segments = 31
+        bpy.context.object.modifiers["Bevel"].limit_method = 'ANGLE'
+        bpy.context.object.modifiers["Bevel"].angle_limit = 0.20
+        bpy.ops.object.modifier_apply(modifier="Bevel")
+        self.rend_color(mid, "Bronzen")
+
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.ops.mesh.primitive_cylinder_add(radius=roter_rad, depth=roter_len, location=(init_x, init_y, init_z+roter_len/2+self.sub_bottom_length + 1))
+        rotor = bpy.context.object
+        bpy.context.view_layer.objects.active = rotor
+        bpy.ops.object.modifier_add(type='BEVEL')
+        bpy.context.object.modifiers["Bevel"].offset_type = 'OFFSET'
+        bpy.context.object.modifiers["Bevel"].width_pct = 0.5
+        bpy.context.object.modifiers["Bevel"].segments = 15
+        bpy.context.object.modifiers["Bevel"].limit_method = 'ANGLE'
+        bpy.context.object.modifiers["Bevel"].angle_limit = 0.20
+        bpy.ops.object.modifier_apply(modifier="Bevel")
+        self.rend_color(rotor, "Wire")
+
+
+        nx = (2 *math.pi * roter_rad/8)/30
+        n_angle = 1.5
+        cube_list = []
+        position = (0, roter_rad+0.1, init_z+roter_len/2+self.sub_bottom_length+1)
+        for i in range(8): 
+            for n in range(24):
+                     
+                rotation_angle = (i*30+n)*n_angle
+                bpy.ops.mesh.primitive_cube_add(location=position)
+                bpy.ops.transform.resize(value=(nx/2, 0.15/2, roter_len*0.8/2))    
+                cube_temp = bpy.context.object
+                temp_x, temp_y = self.rotate_around_point((0,0), rotation_angle, (0,roter_rad+0.01))
+                cube_temp.location.x = temp_x
+                cube_temp.location.y = temp_y
+                cube_temp.select_set(True)
+                bpy.ops.transform.rotate(value=-(i*30+n)*radians(n_angle),orient_axis="Z")
+                cube_list.append(cube_temp)
+                bpy.ops.object.select_all(action='DESELECT')
+
+
+        cube = self.combine_all_obj(cube_list[0], cube_list[1:])
+        self.rend_color(cube, "Fence")
+
+        rotor_main = self.combine_all_obj(stab, [mid, rotor,cube])
+        rotor_main.name = 'Rotor'
+        return rotor_main
 
     def create_general_bolt(self):
         local = (0,0,0)
@@ -612,49 +736,25 @@ class Factory:
 
     def rend_color(self, obj, part):
         """Rend color option. 
-
         Args:
             obj (bpy.type.Objects): Object to be colored
             part (str): Keyword for color rendering
         """
-
-        mat = bpy.data.materials.new(name="Material")
-        
-        if part == "Metall":
-            mat.metallic = 0.8
-            mat.roughness = 0.4
-            mat.diffuse_color = (0.3, 0.3, 0.3, 1)
-            mat.specular_intensity = 0.9
-        
-        elif part == "Energy":
-            mat.diffuse_color = (0.781, 0.775, 0.308, 1)
-        
-        elif part == "Plastic":
-            mat.diffuse_color = (0, 0, 0, 1)
-            mat.metallic = 0.4
-            mat.specular_intensity = 0.5
-            mat.roughness = 0.7
-
-        elif part == "Bit":           
-            mat.diffuse_color = (0.9, 0.9, 0.9, 1)
-            mat.metallic = 0.9
-            mat.specular_intensity = 0.7
-            mat.roughness = 0.1
-        elif part == "Magnet":           
-            mat.diffuse_color = (0, 0, 0, 1)
-            mat.specular_color = (0, 0, 0.38)    
-            mat.metallic = 0.1
-            mat.specular_intensity = 0.5
-            mat.roughness = 0.7
-
-        # Assign it to object
-        if obj.data.materials:
-            # assign to 1st material slot
-            obj.data.materials[0] = mat
-        else:
-            # no slots
-            obj.data.materials.append(mat)
-        bpy.context.view_layer.objects.active = None
+        if self.color_render:
+            mat = bpy.data.materials.new(name="Material")
+            materia_table = self.Materia_Tables[part]
+            mat.diffuse_color = materia_table["diffuse_color"]
+            mat.metallic = materia_table["metallic"]
+            mat.roughness = materia_table["roughness"]
+            mat.specular_intensity = materia_table["specular_intensity"]
+            # Assign it to object
+            if obj.data.materials:
+                # assign to 1st material slot
+                obj.data.materials[0] = mat
+            else:
+                # no slots
+                obj.data.materials.append(mat)
+            bpy.context.view_layer.objects.active = None
 
     def rotate_object(self, object_rotate):
         """Rotate object after creation. Rotation will set by user
@@ -979,6 +1079,7 @@ class Factory:
         internal_gear.select_set(True)
         bpy.ops.transform.resize(value=(radius, radius, height))
         internal_gear.location = position
+        
         return internal_gear   
     
     def create_teeth_mesh(self, position,height,len_base):

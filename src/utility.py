@@ -106,6 +106,7 @@ class Factory:
     IN_GEAR_1 = None
     IN_GEAR_2 = None
     ROTOR = None
+    mf_Combine = True
 
     Materia_Tables = {
                 "Metall":{"diffuse_color": (0.3, 0.3, 0.3, 1),
@@ -207,6 +208,8 @@ class Factory:
         self.id_Nr = factory.id_Nr     
         self.init_modify(factory)
         self.general_Bolt = self.create_general_bolt()
+        self.mf_Combine =  factory.mf_Combine
+
     
     def init_modify(self,factory):
         """Init other variables by demand
@@ -220,7 +223,7 @@ class Factory:
     ########################## Genera Utility ####################################################################################
     
 
-    def combine_all_obj(self, main_obj, object_list):
+    def combine_all_obj(self, main_obj, object_list, combine=True):
         """Combine objects. Joint all opjects in object_list into main_obj
 
         Args:
@@ -230,6 +233,8 @@ class Factory:
         Returns:
             [bpy.types.Object]: [Combined object. Should have same attribute as main_obj]
         """
+        if not combine:
+            return main_obj
         bpy.ops.object.select_all(action='DESELECT')
         bpy.context.view_layer.objects.active = main_obj
         for obj in object_list:
@@ -493,9 +498,12 @@ class Factory:
         stab_rad = 0.15
         mid_rad = 0.4
         roter_rad = 1.2
-        stab_len = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH + self.C5_LENGTH 
+        
+        stab_len = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH +  self.bottom_length + self.sub_bottom_length - 1
+        
+        
         mid_len = 2
-        roter_len = (self.BOTTOM_HEIGHT+self.sub_bottom_length)*1.2
+        roter_len = (self.bottom_length+self.sub_bottom_length)*0.6
 
         bpy.ops.mesh.primitive_cylinder_add(radius=stab_rad, depth=stab_len, location=(init_x, init_y, init_z+stab_len/2+0.5))
         stab = bpy.context.object

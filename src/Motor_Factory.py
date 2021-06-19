@@ -73,6 +73,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Gear_Bolt_Right_B",
         "temp_save",
         "save_path",
+        "mf_Combine",
 
         ]
     
@@ -176,8 +177,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     ################## Bottom ########################################
     #Bottom Length      
     mf_Bottom_Length = FloatProperty(attr='mf_Bottom_Length',
-            name='Bottom Length', default = 6.4,
-            min = 4, soft_min = 0, max = 8, 
+            name='Bottom Length', default = 6.8,
+            min = 6.2, soft_min = 0, max = 10, 
             description='Length of the Bottom')
 
     #Sub Bottom length      
@@ -280,13 +281,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 default = False,
                 description = "Random Bolt Rotation")
 
-
-    #TODO: Change range
-    
-    #mf_Upper_Gear_Bolt_Position_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
-    # #   name='Position of bolts on large gear', default = 13,
-    #    min = 0, max = uppp, step=1,
-     #   description='Position of bolts on large gear')
+    mf_Combine : BoolProperty(name = "Combine all parts",
+                default = True,
+                description = "Random Bolt Rotation")
     
     mf_Upper_Gear_Bolt_Position_1_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
         name='Position of bolts on large gear', default = 13,
@@ -433,6 +430,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 col.prop(self, 'mf_Gear_Bolt_Position_B_2')
                 if self.mf_Extension_Type_B == "mf_None" and self.mf_Gear_Bolt_Nummber_B == '3':
                     col.prop(self, 'mf_Gear_Bolt_Position_B_3')
+        col.prop(self, 'mf_Combine')
         col.prop(self, 'temp_save')
         if self.temp_save:
             col.prop(self, 'save_path')
@@ -524,10 +522,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         en_part = creator.create_en_part()
         #Create Upper part
         upper_part = creator.create_upper_part()
-        obj_list=[upper_part,en_part, creator.ROTOR, creator.IN_GEAR_1, creator.IN_GEAR_2]
+        #
         
+        obj_list=[upper_part, en_part,creator.ROTOR, creator.IN_GEAR_1, creator.IN_GEAR_2]
         # Combine all created parts
-        motor = creator.combine_all_obj(bottom,obj_list)     
+        motor = creator.combine_all_obj(bottom,obj_list, combine=self.mf_Combine)     
         motor.name = "Motor"
         motor.data.name = "Motor"
         

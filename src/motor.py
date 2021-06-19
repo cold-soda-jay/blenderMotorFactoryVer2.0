@@ -117,7 +117,7 @@ class Motor_Creator(Factory):
         cyl["category_id"] = 0
 
         self.save_modell(cyl)
-        self.combine_all_obj(cyl,[cyl_2])
+        self.combine_all_obj(cyl,[cyl_2],self.mf_Combine)
         return cyl
 
 
@@ -232,6 +232,8 @@ class Motor_Creator(Factory):
         main_width = self.BOTTOM_DIA * size
         main_long = self.bottom_length * size
         sub_long = self.sub_bottom_length * size
+        z_main = main_long + sub_long
+
 
         init_x = self.init_x 
         init_y = self.init_y
@@ -345,6 +347,14 @@ class Motor_Creator(Factory):
         en_y_6 = en_y_3 - en_width_3 - en_width_6
         en_z_6 = en_z_5 - en_long_5 - en_long_6 + 0.5
 
+        main = self.create_motor_main((0, 0, z_main),main_hight,main_width,length_en)
+
+        bpy.ops.object.select_all(action='DESELECT')
+        main.select_set(True)
+        bpy.ops.transform.resize(value=(0.91, 1, 1))
+        if self.color_render:
+            self.rend_color(main, "Energy")
+
         bpy.ops.mesh.primitive_cube_add(location=(energy_x+0.5,en_y_6,en_z_6))
         bpy.ops.transform.resize(value=(en_height_6, en_width_6, en_long_6))
         en_8 = bpy.context.object
@@ -352,7 +362,7 @@ class Motor_Creator(Factory):
         if self.color_render:
             self.rend_color(en_part_2, "Bit")
         bpy.context.view_layer.objects.active = None
-        en_part = self.combine_all_obj(en_part_1,[en_part_2])
+        en_part = self.combine_all_obj(en_part_1,[en_part_2,main])
 
         en_part.name = "Charger"
         en_part["category_id"] = 1
@@ -382,14 +392,13 @@ class Motor_Creator(Factory):
         length_2 = self.C1_LENGTH + self.C2_LENGTH
         length_3 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH
         length_4 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH
-        length_5 = self.C1_LENGTH + self.C2_LENGTH + self.C3_LENGTH + self.C4_LENGTH + self.C5_LENGTH
 
 
         cy1_z = length_1/2
         cy2_z = length_2/2
         cy3_z = length_3/2
         cy4_z = length_4/2
-        cy5_z = length_5/2
+        
         #Create 4 Covex cylinder
         
         #bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=length_1, location=(0,0,four_cyl_z+cy1_z))
@@ -1385,13 +1394,13 @@ class Type_A(Motor_Creator):
         gear_1["category_id"] = 2
         self.save_modell(gear_1)
 
-        gear_2 = self.combine_all_obj(gear_1,bolt_list_1)
+        gear_2 = self.combine_all_obj(gear_1,bolt_list_1, combine=self.mf_Combine)
 
-        upper = self.combine_all_obj(gear_2, ex_list)
+        upper = self.combine_all_obj(gear_2, ex_list, combine=self.mf_Combine)
         x,y,z = upper.location
         self.calculate_bolt_position()
 
-        gear = self.combine_all_obj(upper, bolt_list_middle)
+        gear = self.combine_all_obj(upper, bolt_list_middle, combine=self.mf_Combine)
 
         return upper
     
@@ -1890,13 +1899,13 @@ class Type_B(Motor_Creator):
 
         
 
-        up1 = self.combine_all_obj(container, bolt_list)
+        up1 = self.combine_all_obj(container, bolt_list, combine=self.mf_Combine)
         
-        upper  = self.combine_all_obj(up1, ex_list)
+        upper  = self.combine_all_obj(up1, ex_list, combine=self.mf_Combine)
         x,y,z = upper.location
         self.calculate_bolt_position()
                 
-        gear = self.combine_all_obj(upper, bolt_list_middle)
+        gear = self.combine_all_obj(upper, bolt_list_middle, combine=self.mf_Combine)
 
         return gear
     

@@ -129,7 +129,7 @@ class Factory:
                            "roughness":0.1,
                            "specular_intensity":0.7
                         },
-                "Magnet": {"diffuse_color": (0, 0, 0.1, 1),
+                "Magnet": {"diffuse_color": (0.099, 0.099, 0.099, 1),
                            "metallic": 0.1,
                            "roughness":1,
                            "specular_intensity":0.5

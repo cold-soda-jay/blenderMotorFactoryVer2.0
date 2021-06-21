@@ -1081,7 +1081,7 @@ class Factory:
         internal_gear = self.combine_all_obj(ring_main, teeth_list)
         return internal_gear   
 
-    def create_internal_gear(self, position, height, radius, number, thickness=0.5):
+    def create_internal_gear(self, position, height, radius, number, thickness=0.5, teeth_hight=1):
         internal_gear = self.normal_gear(number, thickness)
         bpy.ops.object.select_all(action='DESELECT')
         internal_gear.select_set(True)

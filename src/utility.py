@@ -107,6 +107,7 @@ class Factory:
     IN_GEAR_2 = None
     ROTOR = None
     mf_Combine = True
+    motor_id = 00000
 
     Materia_Tables = {
                 "Metall":{"diffuse_color": (0.3, 0.3, 0.3, 1),
@@ -209,6 +210,7 @@ class Factory:
         self.init_modify(factory)
         self.general_Bolt = self.create_general_bolt()
         self.mf_Combine =  factory.mf_Combine
+        self.motor_id = random.randrange(1, 1e5)
 
     
     def init_modify(self,factory):

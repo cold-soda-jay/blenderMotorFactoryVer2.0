@@ -443,22 +443,12 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     def execute(self, context):
         if  context.selected_objects != [] and context.active_object and \
-            ('Motor' in context.active_object.data.name) :
-            obj = context.active_object
-            oldmesh = obj.data
-            oldmeshname = obj.data.name
+            ('Motor' in context.active_object.data.name):
+            
+            self.delete_motor(context)
+
             obj = self.create_motor()
-            try:
-                bpy.ops.object.vertex_group_remove(all=True)
-            except:
 
-                pass
-
-            for material in oldmesh.materials:
-                obj.data.materials.append(material)
-
-            bpy.data.meshes.remove(oldmesh)
-            obj.data.name = oldmeshname
         else:
             obj = self.create_motor()
 
@@ -561,6 +551,14 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         text = "Module saved under " + str(self.save_path)+ "Motor_%04d/"%self.id_Nr#"Motor_"+str(self.id_Nr)+'/'
         okay.layout.label(text=text)
     
+    def delete_motor(self, contex):
+        scene = bpy.context.scene
+
+        for obj in scene.objects:
+            obj.select_set(True)
+            bpy.ops.object.delete()
+        pass
+
     def test(self,creator):
         #creator.create_rotor()
         #creator.create_internal_gear((0,0,20), 2.6, 0.8,number = 10)

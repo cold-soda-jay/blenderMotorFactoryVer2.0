@@ -66,6 +66,7 @@ class Motor_Creator(Factory):
         cyl_2.select_set(True)
         bpy.ops.transform.resize(value=(1, 1, 0.75))
         cyl_2.location = (cylinder_x, cylinder_y, cylinder_z-0.5)
+        cyl_2["motor_id"] = self.motor_id
         cyl_2.name = "Magnet"
         self.save_modell(cyl_2)
 
@@ -102,6 +103,7 @@ class Motor_Creator(Factory):
         bpy.ops.object.delete()
 
         rotor = self.create_rotor()
+        rotor["motor_id"] = self.motor_id
         self.save_modell(rotor)
         self.ROTOR = rotor
         #rotor.select_set(True)
@@ -109,12 +111,12 @@ class Motor_Creator(Factory):
         #Combine the Objects
 
         self.combine_all_obj(cyl,[sub_cyl])
-
+        cyl["motor_id"] = self.motor_id
+        
         if self.color_render:
             self.rend_color(cyl, "Metall")
             self.rend_color(cyl_2, "Magnet")
         cyl.name = "Bottom"
-        cyl["category_id"] = 0
 
         self.save_modell(cyl)
         self.combine_all_obj(cyl,[cyl_2],self.mf_Combine)
@@ -892,12 +894,15 @@ class Type_A(Motor_Creator):
 
             if extension:
                 length = 0.5
+                inner_length = length + 0.5  
+
             else:
                 length = length_relativ/3
+                inner_length = length + 1.3  
             inner_radius_1 = 1.6/2
             inner_radius_2 = 1.3/2
             inner_radius_3 = 2.9/2
-            inner_length = length + 1.6       
+                 
             
             #Ring 1
             thickness_1 = radius - inner_radius_1

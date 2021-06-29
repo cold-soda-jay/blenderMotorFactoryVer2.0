@@ -282,7 +282,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 description = "Random Bolt Rotation")
 
     mf_Combine : BoolProperty(name = "Combine all parts",
-                default = True,
+                default = False,
                 description = "Random Bolt Rotation")
     
     mf_Upper_Gear_Bolt_Position_1_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
@@ -442,16 +442,22 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         return context.scene is not None
 
     def execute(self, context):
+        
         if  context.selected_objects != [] and context.active_object and \
-            ('Motor' in context.active_object.data.name):
-            
+            ('motor_id' in context.active_object.keys()):    
+            x = context.active_object.location.x
+            y = context.active_object.location.y
+            z = context.active_object.location.z       
             self.delete_motor(context)
-
             obj = self.create_motor()
+            if self.mf_Combine:
+                obj.location.x=x
+                obj.location.y=y
+                obj.location.z=z
+            
 
         else:
-            obj = self.create_motor()
-
+            obj = self.create_motor()    
         obj.data["Motor"] = True
         obj.data["change"] = False
         for prm in self.MotorParameters:
@@ -508,18 +514,26 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         
         #Create bottom part
         bottom = creator.create_Bottom()
+        bottom["motor_id"] = creator.motor_id
         #Create energy part (Electric socket)
         en_part = creator.create_en_part()
+        en_part["motor_id"] = creator.motor_id
         #Create Upper part
         upper_part = creator.create_upper_part()
+        upper_part["motor_id"] = creator.motor_id
         #
-        
-        obj_list=[upper_part, en_part,creator.ROTOR, creator.IN_GEAR_1, creator.IN_GEAR_2]
+        try:
+            creator.ROTOR["motor_id"] = creator.motor_id
+            creator.IN_GEAR_1["motor_id"] = creator.motor_id
+            creator.IN_GEAR_2["motor_id"] = creator.motor_id
+        except :
+            pass
+        obj_list=[upper_part, en_part, creator.ROTOR, creator.IN_GEAR_1, creator.IN_GEAR_2]
         # Combine all created parts
         motor = creator.combine_all_obj(bottom,obj_list, combine=self.mf_Combine)     
         motor.name = "Motor"
         motor.data.name = "Motor"
-        
+        motor["motor_id"] = creator.motor_id
         # Check if color should be rendered
         for area in bpy.context.screen.areas: # iterate through areas in current screen
             if area.type == 'VIEW_3D':               
@@ -544,6 +558,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
            self.temp_save = False   
            self.save_path = "None" 
         creator.clear_bolt() 
+
         self.test(creator)    
         return motor
 
@@ -553,11 +568,17 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     
     def delete_motor(self, contex):
         scene = bpy.context.scene
-
+        motor = contex.active_object
+        id = motor["motor_id"]
         for obj in scene.objects:
-            obj.select_set(True)
-            bpy.ops.object.delete()
-        pass
+            try:
+                if obj["motor_id"] == id:
+                    obj.select_set(True)
+                    bpy.ops.object.delete()
+            except:
+                continue
+
+
 
     def test(self,creator):
         #creator.create_rotor()

@@ -4,7 +4,7 @@ import math
 import mathutils
 import random
 from math import radians
-import bmesh
+import time
 import random
 import csv
 import re
@@ -210,7 +210,7 @@ class Factory:
         self.init_modify(factory)
         self.general_Bolt = self.create_general_bolt()
         self.mf_Combine =  factory.mf_Combine
-        self.motor_id = random.randrange(1, 1e5)
+        self.motor_id = random.randrange(1, 1e7)
 
     
     def init_modify(self,factory):
@@ -742,6 +742,7 @@ class Factory:
         elif bit_type == 'mf_Bit_Allen':
             self.bolt_roate_angle_list.append(Angle%60)
         bolt["category_id"] = 4
+        bolt["motor_id"] = self.motor_id
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
@@ -1081,6 +1082,7 @@ class Factory:
             teeth_list.append(teeth)
             bpy.ops.object.select_all(action='DESELECT')
         internal_gear = self.combine_all_obj(ring_main, teeth_list)
+        internal_gear["motor_id"] = self.motor_id
         return internal_gear   
 
     def create_internal_gear(self, position, height, radius, number, thickness=0.5, teeth_hight=1):

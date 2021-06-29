@@ -207,9 +207,10 @@ class Motor_Creator(Factory):
         hole.select_set(True)
         bpy.ops.object.delete()
 
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA/2, depth=50, location=(0,0,0))
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=main_hight/2, location=(ub_lx,ub_ly,ub_lz+main_hight/4))
         new_hole = bpy.context.object
         self.diff_obj(cube_1,new_hole)
+        #self.diff_obj(convex,new_hole)
         new_hole.select_set(True)
         bpy.ops.object.delete()
         #Cereate  Bolt 1
@@ -233,7 +234,7 @@ class Motor_Creator(Factory):
 
         mid = self.combine_all_obj(mid_1,[bolt_1[0],bolt_2[0],convex])
         mid.name = 'Middle_Part'
-
+        mid["motor_id"] = self.motor_id
         return mid, [bolt_1[1], bolt_2[1]]
 
     def create_en_part(self):
@@ -364,12 +365,40 @@ class Motor_Creator(Factory):
 
         bpy.ops.object.select_all(action='DESELECT')
         main.select_set(True)
-        bpy.ops.transform.resize(value=(0.8, 0.9, 1))
+        bpy.ops.transform.resize(value=(0.8, 0.95, 1))
         bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=50, location=(0,0,0))
         hole = bpy.context.object
         self.diff_obj(main,hole)
         hole.select_set(True)
         bpy.ops.object.delete()
+
+        main_hole = self.create_motor_main((0, 0, z_main-0.2),main_hight,main_width,length_en)
+        bpy.ops.object.select_all(action='DESELECT')
+        main_hole.select_set(True)
+        bpy.ops.transform.resize(value=(0.7, 0.8, 1))
+        self.diff_obj(main,main_hole)
+        main_hole.select_set(True)
+        bpy.ops.object.delete()
+
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=self.BOLT_LENGTH, location=(0, 0, z_main+0.8*self.BOLT_LENGTH))
+        uper_cyl = bpy.context.object#self.create_ring(position=(0, 0, z_main+0.6*self.BOLT_LENGTH), height=self.BOLT_LENGTH, radius=self.FOUR_CYL_DIA, thickness=0.5*self.FOUR_CYL_DIA)
+        bpy.context.view_layer.objects.active = uper_cyl
+        bpy.ops.object.modifier_add(type='BEVEL')
+        bpy.context.object.modifiers["Bevel"].offset_type = 'OFFSET'
+        bpy.context.object.modifiers["Bevel"].width_pct = 0.35#0.75*roter_rad*2
+        bpy.context.object.modifiers["Bevel"].segments = 31
+        bpy.context.object.modifiers["Bevel"].limit_method = 'ANGLE'
+        bpy.context.object.modifiers["Bevel"].angle_limit = 0.20
+        bpy.ops.object.modifier_apply(modifier="Bevel")
+
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA/4, depth=50, location=(0, 0, z_main+0.8*self.BOLT_LENGTH))
+        uper_cyl_hole = bpy.context.object
+        self.diff_obj(uper_cyl,uper_cyl_hole)
+        uper_cyl_hole.select_set(True)
+        bpy.ops.object.delete()
+
+        main=self.combine_all_obj(main,[uper_cyl])
+
 
         if self.color_render:
             self.rend_color(main, "Energy")
@@ -384,10 +413,10 @@ class Motor_Creator(Factory):
         en_part = self.combine_all_obj(en_part_1,[en_part_2,main])
 
         en_part.name = "Charger"
-        en_part["category_id"] = 1
+        en_part["motor_id"] = self.motor_id
 
         self.save_modell(en_part)
-
+        
         return en_part
 
     ##############################################################################################################################
@@ -1411,7 +1440,7 @@ class Type_A(Motor_Creator):
         extension_zone, bolt_list_2 = self.create_up(length_relativ, extension=True)
         self.rotate_object(extension_zone)
         extension_zone.name = "Cover"
-        extension_zone["category_id"] = 3
+        extension_zone["motor_id"] = self.motor_id
         self.save_modell(extension_zone)
         
         for bolt in bolt_list_2:
@@ -1424,7 +1453,7 @@ class Type_A(Motor_Creator):
 
         gear_1 = self.combine_all_obj(board,[up1,middle])
         gear_1.name = "Gear_Container"
-        gear_1["category_id"] = 2
+        gear_1["motor_id"] = self.motor_id
         self.save_modell(gear_1)
 
         gear_2 = self.combine_all_obj(gear_1,bolt_list_1, combine=self.mf_Combine)
@@ -1432,7 +1461,7 @@ class Type_A(Motor_Creator):
         upper = self.combine_all_obj(gear_2, ex_list, combine=self.mf_Combine)
         x,y,z = upper.location
         self.calculate_bolt_position()
-
+        upper["motor_id"] = self.motor_id
         gear = self.combine_all_obj(upper, bolt_list_middle, combine=self.mf_Combine)
 
         return upper
@@ -1949,7 +1978,7 @@ class Type_B(Motor_Creator):
 
         container = self.combine_all_obj(upper_1, [middle])
         container.name = 'Gear_Container' 
-        container["category_id"] = 2
+        container["motor_id"] = self.motor_id
  
         self.save_modell(container)
 
@@ -1961,7 +1990,7 @@ class Type_B(Motor_Creator):
         extension_zone.name = "Cover"  
         self.rotate_object(extension_zone)
         
-        extension_zone["category_id"] = 3
+        extension_zone["motor_id"] = self.motor_id
         self.save_modell(extension_zone)  
             
         for bl in bolt_list:
@@ -1983,7 +2012,7 @@ class Type_B(Motor_Creator):
         self.calculate_bolt_position()
                 
         gear = self.combine_all_obj(upper, bolt_list_middle, combine=self.mf_Combine)
-
+        gear["motor_id"] = self.motor_id
         return gear
     
     def flip_object(self, object_rotate):

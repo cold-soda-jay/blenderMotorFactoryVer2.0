@@ -380,7 +380,7 @@ class Motor_Creator(Factory):
         main_hole.select_set(True)
         bpy.ops.object.delete()
 
-        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA, depth=self.BOLT_LENGTH, location=(0, 0, z_main+0.8*self.BOLT_LENGTH))
+        bpy.ops.mesh.primitive_cylinder_add(radius=self.FOUR_CYL_DIA*0.99, depth=self.BOLT_LENGTH, location=(0, 0, z_main+0.8*self.BOLT_LENGTH))
         uper_cyl = bpy.context.object#self.create_ring(position=(0, 0, z_main+0.6*self.BOLT_LENGTH), height=self.BOLT_LENGTH, radius=self.FOUR_CYL_DIA, thickness=0.5*self.FOUR_CYL_DIA)
         bpy.context.view_layer.objects.active = uper_cyl
         bpy.ops.object.modifier_add(type='BEVEL')

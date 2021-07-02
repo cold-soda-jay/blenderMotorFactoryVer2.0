@@ -49,6 +49,9 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
+        "mf_Corrosion_Percent",
+        "mf_Head_Fail_Percent",
+
         "mf_Lower_Gear_Bolt_Random",
         "mf_Lower_Gear_Bolt_Position_1",
         "mf_Lower_Gear_Bolt_Position_2", 
@@ -92,6 +95,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Upper_Gear_Dia",
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
+        "mf_Corrosion_Percent",
+        "mf_Head_Fail_Percent",
         "mf_Lower_Gear_Bolt_Random",
         "mf_Lower_Gear_Bolt_Position_1",
         "mf_Lower_Gear_Bolt_Position_2", 
@@ -342,6 +347,16 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             name='Bit Type',
             description='Choose the type of bit to you would like',
             items = Bit_Type_List, default = 'mf_Bit_Torx')
+
+    mf_Corrosion_Percent = FloatProperty(attr='mf_Corrosion_Percent',
+        name='Corrosion Percent', default =10,
+        min = 0, soft_min = 0, max = 100, 
+        description='Percent of bolt Corrosion')
+
+    mf_Head_Fail_Percent = FloatProperty(attr='mf_Head_Fail_Percent',
+        name='Head Fail Percent', default =0,
+        min = 0, soft_min = 0, max = 100, 
+        description='Percent of bolt Head Fail')
     
     ##################### Svae path #####################
     temp_save : BoolProperty(name = "Save the module ", 
@@ -401,6 +416,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.label(text="Bolts Type")
         col.prop(self, 'mf_Bit_Type')
         col.prop(self, 'mf_Bolt_Orientation')      
+        col.prop(self, "mf_Corrosion_Percent") 
+        col.prop(self, "mf_Head_Fail_Percent")
 
         if self.mf_Top_Type == "mf_Top_Type_A":    
 

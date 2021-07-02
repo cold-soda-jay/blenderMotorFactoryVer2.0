@@ -109,6 +109,8 @@ class Factory:
     mf_Combine = True
     motor_id = 00000
     inclination = 0
+    corrosion_Percent = 0
+    head_Fail_Percent = 0
 
     Materia_Tables = {
                 "Metall":{"diffuse_color": (0.3, 0.3, 0.3, 1),
@@ -205,6 +207,8 @@ class Factory:
         self.IN_GEAR_1 = None
         self.IN_GEAR_2 = None
         self.inclination = factory.mf_Teeth_Inclination
+        self.corrosion_Percent = factory.mf_Corrosion_Percent
+        self.head_Fail_Percent = factory.mf_Head_Fail_Percent *0.01
         self.ROTOR = None
         self.save_path = factory.save_path
         self.temp_save = factory.temp_save
@@ -213,6 +217,7 @@ class Factory:
         self.general_Bolt = self.create_general_bolt()
         self.mf_Combine =  factory.mf_Combine
         self.motor_id = random.randrange(1, 1e7)
+
 
     
     def init_modify(self,factory):
@@ -568,36 +573,33 @@ class Factory:
         rotor_main.name = 'Rotor'
         return rotor_main
 
+
     def create_general_bolt(self):
-        local = (0,0,0)
+        local = (0,0,0)  
         bit_type = self.bit_type
-        shank_length = 0
-        shank_dia = 6
-        cap_height = 3
-        cap_dia = 7
         thread_length = 14
-        major = 3
-        minor = 4
-        pitch = 1
-        crest = 41
-        root = 1
-        div = 60
+        head_fail_radius = 1.25 + self.head_Fail_Percent * 0.6
+        
+        
         if bit_type == 'mf_Bit_Slot':
-            bpy.ops.mesh.bolt_add(align='VIEW', location=local, 
-                                    bf_Model_Type='bf_Model_Bolt', 
-                                    bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_None', 
-                                    bf_Shank_Length=shank_length, 
-                                    bf_Shank_Dia=shank_dia,  
-                                    bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
-                                    bf_Thread_Length=thread_length, 
-                                    bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
+            bpy.ops.fail.createbolt(Thread_Length=thread_length, bf_Bit_Type='None', 
+                                    bf_Corrosion_Percent=self.corrosion_Percent, 
+                                    )
+            #bpy.ops.mesh.bolt_add(align='VIEW', location=local, 
+            #                        bf_Model_Type='bf_Model_Bolt', 
+            #                        bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_None', 
+            #                        bf_Shank_Length=shank_length, 
+            #                        bf_Shank_Dia=shank_dia,  
+            #                        bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+            #                        bf_Thread_Length=thread_length, 
+            #                        bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+            #                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
             bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
             bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
             bolt = bpy.context.object
             bolt.location = local  
             
-            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],position[2]+out_length/2+0.2))
+            bpy.ops.mesh.primitive_cube_add(location=(local[0],local[1],local[2]+self.BOLT_LENGTH/2-0.2))
             bpy.ops.transform.resize(value=(5, 0.05, 0.2))
             bit = bpy.context.object
             
@@ -611,14 +613,18 @@ class Factory:
             
         elif bit_type == 'mf_Bit_Torx':
             #Torx
-            
-            bpy.ops.mesh.bolt_add(align='CURSOR', #location=local,  
-                                bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', 
-                                bf_Bit_Type='bf_Bit_Torx', bf_Shank_Length=shank_length, 
-                                bf_Shank_Dia=shank_dia, bf_Torx_Size_Type='bf_Torx_T20', bf_Torx_Bit_Depth=2, 
-                                bf_Cap_Head_Height=cap_height+1, bf_Cap_Head_Dia=cap_dia, 
-                                bf_Thread_Length=thread_length, bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
+            bpy.ops.fail.createbolt(Thread_Length=thread_length, bf_Bit_Type='bf_Torx', 
+                                    bf_Corrosion_Percent=self.corrosion_Percent, 
+                                    Fail_Headfail='Headfail',
+                                    Hf_radius_over_torx=head_fail_radius, 
+                                    Hf_radius_under_torx=head_fail_radius)
+            #bpy.ops.mesh.bolt_add(align='CURSOR', #location=local,  
+            #                    bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', 
+            #                    bf_Bit_Type='bf_Bit_Torx', bf_Shank_Length=shank_length, 
+            #                    bf_Shank_Dia=shank_dia, bf_Torx_Size_Type='bf_Torx_T20', bf_Torx_Bit_Depth=2, 
+            #                    bf_Cap_Head_Height=cap_height+1, bf_Cap_Head_Dia=cap_dia, 
+            #                    bf_Thread_Length=thread_length, bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+             #                   bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div,)
             bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
             bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
             bolt = bpy.context.object
@@ -626,14 +632,19 @@ class Factory:
             
         elif bit_type == 'mf_Bit_Cross':
             # Cross
-            bpy.ops.mesh.bolt_add(align='WORLD', location=local,
-                                    bf_Model_Type='bf_Model_Bolt',
-                                    bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Philips', 
-                                    bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
-                                    bf_Phillips_Bit_Depth=2.23269, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
-                                    bf_Philips_Bit_Dia=3, bf_Thread_Length=thread_length, 
-                                    bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+            bpy.ops.fail.createbolt(Thread_Length=thread_length, bf_Bit_Type='bf_Phillips', 
+                                    bf_Corrosion_Percent=self.corrosion_Percent, 
+                                    Fail_Headfail='Headfail',
+                                    Hf_radius_over_phillips= 0.5 + self.head_Fail_Percent * 1.1, 
+                                    Hf_radius_under_phillips= 0.4 + self.head_Fail_Percent * 0.3)
+            #bpy.ops.mesh.bolt_add(align='WORLD', location=local,
+            #                        bf_Model_Type='bf_Model_Bolt',
+             #                       bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Philips', 
+            #                        bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
+            #                        bf_Phillips_Bit_Depth=2.23269, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+            #                        bf_Philips_Bit_Dia=3, bf_Thread_Length=thread_length, 
+            #                        bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+            #                    bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
             bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
             bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
             bolt = bpy.context.object
@@ -641,13 +652,19 @@ class Factory:
             
         elif bit_type == 'mf_Bit_Allen':
             #Allen
-            bpy.ops.mesh.bolt_add(align='WORLD', location=local, 
-                                bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Allen', 
-                                bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
-                                bf_Allen_Bit_Depth=2, bf_Allen_Bit_Flat_Distance=3, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
-                                bf_Thread_Length=thread_length, 
-                                bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
-                                bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+            #bpy.ops.mesh.bolt_add(align='WORLD', location=local, 
+            #                    bf_Model_Type='bf_Model_Bolt', bf_Head_Type='bf_Head_Cap', bf_Bit_Type='bf_Bit_Allen', 
+             #                   bf_Shank_Length=shank_length, bf_Shank_Dia=shank_dia, 
+             #                   bf_Allen_Bit_Depth=2, bf_Allen_Bit_Flat_Distance=3, bf_Cap_Head_Height=cap_height, bf_Cap_Head_Dia=cap_dia, 
+             #                   bf_Thread_Length=thread_length, 
+             #                   bf_Major_Dia=major, bf_Pitch=pitch, bf_Minor_Dia=minor, 
+             #                   bf_Crest_Percent=crest, bf_Root_Percent=root,  bf_Div_Count=div)
+            bpy.ops.fail.createbolt(Thread_Length=thread_length, bf_Bit_Type='bf_Allen', 
+                                    bf_Corrosion_Percent=self.corrosion_Percent, 
+                                    Fail_Headfail='Headfail',
+                                    Hf_radius_over_allen=self.head_Fail_Percent * 1.7, 
+                                    Hf_radius_under_allen=self.head_Fail_Percent * 1.7)
+
             bpy.ops.transform.resize(value=(0.1, 0.1, 0.1))
             bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
             bolt = bpy.context.object
@@ -691,17 +708,19 @@ class Factory:
             cyl_deck = bpy.context.object
             out_cyl = self.combine_all_obj(cyl_shell, [cyl_deck])
             out_cyl.name = 'out_cylinder'
+            
+
             bpy.ops.object.select_all(action='DESELECT')
             ##################################### Bolt ######################################################################################################
             local = (position[0],position[1],position[2]+0.15)
 
             bpy.ops.object.select_all(action='DESELECT')
             bpy.context.view_layer.objects.active = None
-            bpy.context.view_layer.objects.active = self.general_Bolt
-            self.general_Bolt.select_set(True)  
+            #bpy.context.view_layer.objects.active = self.general_Bolt
+            #self.general_Bolt.select_set(True)  
             
-            bpy.ops.object.duplicate(linked=0,mode='TRANSLATION') 
-            bolt = bpy.context.object
+            #bpy.ops.object.duplicate(linked=0, mode='TRANSLATION') 
+            bolt = self.create_general_bolt()#bpy.context.object
             #bolt = self.general_Bolt.copy()
             #bolt.data = self.general_Bolt.data.copy()
             bolt.location = local
@@ -711,7 +730,8 @@ class Factory:
                        
             if self.color_render:
                 self.rend_color(out_cyl,"Plastic")
-                self.rend_color(bolt,"Bit")
+                #bpy.ops.object.select_all(action='DESELECT')
+                self.rend_color(bolt,"Damage_Bolt")
                 #self.rend_color(in_cyl,"Bit")
                 #self.rend_color(thread,"Bit")
 
@@ -745,7 +765,6 @@ class Factory:
         elif bit_type == 'mf_Bit_Allen':
             self.bolt_roate_angle_list.append(Angle%60)
         bolt["category_id"] = 4
-        bolt["motor_id"] = self.motor_id
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):
@@ -755,20 +774,26 @@ class Factory:
             part (str): Keyword for color rendering
         """
         if self.color_render:
-            mat = bpy.data.materials.new(name="Material")
-            materia_table = self.Materia_Tables[part]
-            mat.diffuse_color = materia_table["diffuse_color"]
-            mat.metallic = materia_table["metallic"]
-            mat.roughness = materia_table["roughness"]
-            mat.specular_intensity = materia_table["specular_intensity"]
-            # Assign it to object
-            if obj.data.materials:
-                # assign to 1st material slot
-                obj.data.materials[0] = mat
+            if part == "Damage_Bolt":  
+                obj.select_set(True)
+                bpy.context.view_layer.objects.active = obj
+                bpy.ops.fail.corro(bf_Corrosion_Percent=self.corrosion_Percent)       
+                bpy.context.view_layer.objects.active = None
             else:
-                # no slots
-                obj.data.materials.append(mat)
-            bpy.context.view_layer.objects.active = None
+                mat = bpy.data.materials.new(name="Material")
+                materia_table = self.Materia_Tables[part]
+                mat.diffuse_color = materia_table["diffuse_color"]
+                mat.metallic = materia_table["metallic"]
+                mat.roughness = materia_table["roughness"]
+                mat.specular_intensity = materia_table["specular_intensity"]
+                # Assign it to object
+                if obj.data.materials:
+                    # assign to 1st material slot
+                    obj.data.materials[0] = mat
+                else:
+                    # no slots
+                    obj.data.materials.append(mat)
+                bpy.context.view_layer.objects.active = None
 
     def rotate_object(self, object_rotate):
         """Rotate object after creation. Rotation will set by user

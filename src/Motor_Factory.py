@@ -58,7 +58,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Upper_Gear_Bolt_Position_1_1",
         "mf_Upper_Gear_Bolt_Position_1_2",
         "mf_Upper_Gear_Bolt_Position_1_3",
-        #"mf_Upper_Gear_Bolt_Position_1",
+        "mf_Teeth_Inclination",
         "mf_Upper_Gear_Bolt_Position_2_1",
         "mf_Upper_Gear_Bolt_Position_2_2",
         "mf_Upper_Gear_Bolt_Position_3",
@@ -108,6 +108,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Gear_Bolt_Position_B_2",
         "mf_Gear_Bolt_Position_B_3",
         "mf_Gear_Bolt_Right_B",
+        "mf_Teeth_Inclination",
+
         ]
     #Create genera types and Variables
 
@@ -186,7 +188,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             name='Sub Bottom Length', default = 1.2,
             min =0.6, soft_min = 0.1, max = 2, 
             description='Length of the Sub Bottom')
-                    
+
+    mf_Teeth_Inclination = FloatProperty(attr='mf_Teeth_Inclination',
+            name='Teeth Inclination', default = 10,
+            min =-20, max = 20, 
+            description='Teeth Inclination of gears')                
     
 
     ###################### Lower Gears for type A and B ########################################
@@ -282,7 +288,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 description = "Random Bolt Rotation")
 
     mf_Combine : BoolProperty(name = "Combine all parts",
-                default = False,
+                default = True,
                 description = "Random Bolt Rotation")
     
     mf_Upper_Gear_Bolt_Position_1_1 = IntProperty(attr='mf_Upper_Gear_Bolt_Position_1',
@@ -376,6 +382,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.prop(self, 'mf_Flip')
 
         col.prop(self, 'mf_Color_Render')
+
+        col.prop(self, 'mf_Teeth_Inclination')
 
         col.label(text="Bottom")
         col.prop(self, 'mf_Bottom_Length') 
@@ -582,7 +590,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     def test(self,creator):
         #creator.create_rotor()
-        #creator.create_internal_gear((0,0,20), 2.6, 0.8,number = 10)
+        #creator.create_internal_gear((0,0,20), 2.6, 3,number = 30)
         pass
 
 

@@ -1964,7 +1964,7 @@ class Type_B(Motor_Creator):
         cut_ring.select_set(True)
         bpy.ops.transform.rotate(value=radians(90),orient_axis='Y') 
         self.diff_obj(upper_1, cut_ring)
-        self.diff_obj(middle, cut_ring)
+        #self.diff_obj(middle, cut_ring)
         cut_ring.select_set(True)
         bpy.ops.object.delete()
 

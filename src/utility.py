@@ -108,6 +108,7 @@ class Factory:
     ROTOR = None
     mf_Combine = True
     motor_id = 00000
+    inclination = 0
 
     Materia_Tables = {
                 "Metall":{"diffuse_color": (0.3, 0.3, 0.3, 1),
@@ -203,6 +204,7 @@ class Factory:
         ]
         self.IN_GEAR_1 = None
         self.IN_GEAR_2 = None
+        self.inclination = factory.mf_Teeth_Inclination
         self.ROTOR = None
         self.save_path = factory.save_path
         self.temp_save = factory.temp_save
@@ -267,6 +269,7 @@ class Factory:
             rot = radians(Angle)   
         else:
             rot = Angle
+        
         relativ_point = [obj_position[0]-origin[0], obj_position[1]-origin[1]]
         x = relativ_point[0] * math.cos(rot) - relativ_point[1] * math.sin(rot) 
         y = relativ_point[0] * math.sin(rot)  + relativ_point[1] * math.cos(rot)
@@ -1085,7 +1088,7 @@ class Factory:
         internal_gear["motor_id"] = self.motor_id
         return internal_gear   
 
-    def create_internal_gear(self, position, height, radius, number, thickness=0.5, teeth_hight=1):
+    def create_internal_gear(self, position, height, radius, number, thickness=0.5):
         internal_gear = self.normal_gear(number, thickness)
         bpy.ops.object.select_all(action='DESELECT')
         internal_gear.select_set(True)
@@ -1099,6 +1102,17 @@ class Factory:
         y = position[1]
         z = position[2] + height/2
         t_len = 2.3 *len_base
+        incli = math.tan(radians(self.inclination)) * height
+        rota_1 =  incli/1.1
+        
+        x_incli_1 = position[0] * math.cos(rota_1) - position[1] * math.sin(rota_1) 
+        y_incli_1 = position[0] * math.sin(rota_1)  + position[1] * math.cos(rota_1)
+
+        rota_2 =  incli/1.1
+        
+        x_incli_1 = position[0] * math.cos(rota_1) - position[1] * math.sin(rota_1) 
+        y_incli_1 = position[0] * math.sin(rota_1)  + position[1] * math.cos(rota_1)
+
         len_up = len_base * 0.4
         p1x = x
         p1y = y + len_base
@@ -1111,13 +1125,13 @@ class Factory:
         
         verts =[
             [p1x, p1y, z],
-            [p1x, p1y + len_base, z - height],
+            [p1x , p1y + incli, z - height],
             [p2x, p2y, z],
-            [p2x, p2y + len_base, z - height],
+            [p2x , p2y + incli, z - height],
             [p3x, p3y,z],
-            [p3x, p3y + len_base, z - height],
+            [p3x , p3y + incli, z - height],
             [p4x, p4y, z],
-            [p4x, p4y + len_base, z - height],
+            [p4x , p4y + incli, z - height],
         ]
         
         faces = [

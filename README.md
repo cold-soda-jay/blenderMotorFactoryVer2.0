@@ -2,7 +2,7 @@
 
 This is an blender addon which can create motor. We parameterized many features of a motor and so user can generate various model in same type but different parameters.
 
-**This is an extended version of** [Blender Mortor Factory](https://github.com/cold-soda-jay/blenderMotorFactory). The main different between two version is that in thsi version the inner parts of motor will also be generated. Including hears and rotor.
+**This is an extended version of** [Blender Mortor Factory](https://github.com/cold-soda-jay/blenderMotorFactory). The main different between two version is that in this version the inner parts of motor will also be generated. Including gears and rotor.
 
 
 ## 1. Installation

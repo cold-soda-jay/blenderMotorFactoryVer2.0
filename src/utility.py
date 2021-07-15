@@ -764,7 +764,7 @@ class Factory:
             self.bolt_roate_angle_list.append(Angle%90)
         elif bit_type == 'mf_Bit_Allen':
             self.bolt_roate_angle_list.append(Angle%60)
-        bolt["category_id"] = 4
+        bolt["motor_id"] = self.motor_id
         return [out_cyl,bolt]
 
     def rend_color(self, obj, part):

@@ -470,11 +470,13 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         
         if  context.selected_objects != [] and context.active_object and \
             ('motor_id' in context.active_object.keys()):    
+            loc_list = self.get_old_loc(context)
             x = context.active_object.location.x
             y = context.active_object.location.y
             z = context.active_object.location.z       
             self.delete_motor(context)
             obj = self.create_motor()
+            self.move_motor(obj, loc_list)
             if self.mf_Combine:
                 obj.location.x=x
                 obj.location.y=y
@@ -602,7 +604,31 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                     bpy.ops.object.delete()
             except:
                 continue
+    def get_old_loc(self, contex):
+        scene = bpy.context.scene
+        motor = contex.active_object
+        id = motor["motor_id"]
+        loc_list = {}
+        for obj in scene.objects:
+            try:
+                if obj["motor_id"] == id:
+                    loc_list[obj.name_full] = [obj.location.x, obj.location.y, obj.location.z]
+            except:
+                continue
+        return loc_list
 
+    def move_motor(self, motor, loc_list):
+        id = motor["motor_id"]
+        scene = bpy.context.scene
+        for obj in scene.objects:
+            try:
+                if obj["motor_id"] == id:
+                    x, y, z = loc_list[obj.name_full] 
+                    obj.location.x = x
+                    obj.location.y = y
+                    obj.location.z = z
+            except:
+                continue
 
 
     def test(self,creator):

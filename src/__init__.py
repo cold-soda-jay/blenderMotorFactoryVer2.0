@@ -36,7 +36,7 @@ def Motor_contex_menu(self, context):
 
     obj = context.object
     layout = self.layout
-    if 'Motor' in obj.name_full:
+    if 'motor_id' in obj.keys():
         props = layout.operator(Motor_Factory_Operator.bl_idname, text="Change Motor")
         props.change = True
         for prm in Motor_Factory_Operator.MotorParameters:

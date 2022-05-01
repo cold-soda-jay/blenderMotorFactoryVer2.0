@@ -2,13 +2,19 @@ import bpy
 import os
 import math
 import mathutils
-import random
 from math import radians
 import time
 import random
 import csv
 import re
-
+from bpy.types import Operator
+from bpy.props import (
+    BoolProperty,
+    StringProperty,
+    EnumProperty,
+    IntProperty,
+    FloatProperty,
+)
 
 
 
@@ -163,6 +169,17 @@ class Factory:
                         },
             }
 
+    parent_folder = os.path.realpath(__file__)
+    index = parent_folder.index("src")
+    path = parent_folder[:index+3]
+    Path_Corrision = {
+                        'Rust Red': path+"/materials/rust.jpg",
+                        'Rust Blue': path+"/materials/rust_blue.jpg",
+                        'Rust Pink': path+"/materials/rust_pink.jpg",
+                        'Rust Green': path+"/materials/rust_green.jpg",
+                        'Rust Yellow': path+"/materials/rust_yellow.jpg"
+                    }
+
     def __init__(self,factory):
         """initiate variables.
 
@@ -185,21 +202,34 @@ class Factory:
         self.out_bolt_position = []
         self.bolt_roate_angle_list = []
 
-        self.gear_Flip = factory.mf_Flip
+        self.gear_Flip = factory.mf_Mirror
 
         self.lower_gear_dia = factory.mf_Lower_Gear_Dia
         self.lower_gear_position = factory.mf_Lower_Gear_Position
         
         self.color_render = factory.mf_Color_Render
 
+        self.rend_corrision = factory.mf_Corrision_Render
+        self.corr_type_bolt = factory.mf_Corrision_Type_Bolt
+        self.corr_percent_bolt = factory.mf_Corrision_Percent_Bolt
+        self.corr_type_bottom = factory.mf_Corrision_Type_Bottom
+        self.corr_percent_bottom = factory.mf_Corrision_Percent_Bottom
+        
+
         self.motor_param += [
             "mf_Top_Type",
-            "mf_Flip",
+            "mf_Mirror",
             "mf_Color_Render",
+            "mf_Corrision_Render",
+            "mf_Corrision_Type_Bolt",
+            "mf_Corrision_Percent_Bolt",
+            "mf_Corrision_Type_Bottom",
+            "mf_Corrision_Percent_Bottom",
             "mf_Bottom_Length",
             "mf_Sub_Bottom_Length",
             "mf_Bit_Type",
             "mf_Bolt_Orientation",
+            "mf_Teeth_Inclination",
             
         ]
         self.IN_GEAR_1 = None
@@ -447,7 +477,7 @@ class Factory:
         cylinder_r = width/2
         cylinder_d = length
 
-        bpy.ops.mesh.primitive_cylinder_add(radius=cylinder_r, depth=cylinder_d, location=position)
+        bpy.ops.mesh.primitive_cylinder_add(radius=cylinder_r, depth=cylinder_d, location=position, vertices=128)
         cyl = bpy.context.object
         cyl.name = 'Motor_main_part'
 
@@ -597,7 +627,7 @@ class Factory:
             bolt = bpy.context.object
             bolt.location = local  
             
-            bpy.ops.mesh.primitive_cube_add(location=(position[0],position[1],position[2]+out_length/2+0.2))
+            bpy.ops.mesh.primitive_cube_add(location=(local[0],local[1],local[2]+self.BOLT_LENGTH/2+0.05))
             bpy.ops.transform.resize(value=(5, 0.05, 0.2))
             bit = bpy.context.object
             
@@ -652,6 +682,9 @@ class Factory:
             bpy.ops.object.origin_set(type='GEOMETRY_ORIGIN')
             bolt = bpy.context.object
             bolt.location = local
+        
+        if self.color_render:
+            self.rend_color(bolt,"Bit", texture=self.corr_type_bolt, corr_percent=self.corr_percent_bolt)
         return bolt
 
     def create_bolt(self, position,rotation=None,only_body=False):
@@ -676,6 +709,8 @@ class Factory:
                 bpy.ops.object.select_all(action='DESELECT')
                 part.select_set(True)
                 bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
+            if self.color_render:
+                self.rend_color(part,"Plastic")
             return [part, None]
 
         else:
@@ -708,10 +743,10 @@ class Factory:
             #bolt = self.create_ring((0,0,0), 0.01, 0.01, 0.005)
             bolt.name = 'Bolt_'+str(self.bolt_num)
             self.bolt_num+=1
-                       
+
             if self.color_render:
                 self.rend_color(out_cyl,"Plastic")
-                self.rend_color(bolt,"Bit")
+                #self.rend_color(bolt,"Bit", texture=self.corr_type_bolt, corr_percent=self.corr_percent_bolt)
                 #self.rend_color(in_cyl,"Bit")
                 #self.rend_color(thread,"Bit")
 
@@ -748,26 +783,29 @@ class Factory:
         bolt["motor_id"] = self.motor_id
         return [out_cyl,bolt]
 
-    def rend_color(self, obj, part):
+    def rend_color(self, obj, part, texture=None, corr_percent = 10):
         """Rend color option. 
         Args:
             obj (bpy.type.Objects): Object to be colored
             part (str): Keyword for color rendering
         """
         if self.color_render:
-            mat = bpy.data.materials.new(name="Material")
-            materia_table = self.Materia_Tables[part]
-            mat.diffuse_color = materia_table["diffuse_color"]
-            mat.metallic = materia_table["metallic"]
-            mat.roughness = materia_table["roughness"]
-            mat.specular_intensity = materia_table["specular_intensity"]
-            # Assign it to object
-            if obj.data.materials:
-                # assign to 1st material slot
-                obj.data.materials[0] = mat
+            if texture is not None and self.rend_corrision and corr_percent!= 0:
+                corrision = self.create_corrision(obj, texture, corr_percent, part)
+                
+                obj.data.materials.append(corrision)
             else:
-                # no slots
+                mat = bpy.data.materials.new(name="Material")
+                materia_table = self.Materia_Tables[part]
+                mat.diffuse_color = materia_table["diffuse_color"]
+                mat.metallic = materia_table["metallic"]
+                mat.roughness = materia_table["roughness"]
+                mat.specular_intensity = materia_table["specular_intensity"]
+                # Assign it to object
                 obj.data.materials.append(mat)
+                
+                    #pass
+                    #obj.data.materials.append(corrision)
             bpy.context.view_layer.objects.active = None
 
     def rotate_object(self, object_rotate):
@@ -911,33 +949,34 @@ class Factory:
             modell (bpy.types.Objects): 
             addtional (bpy.types.Objects, optional): If other model should be saved in the same file. Defaults to None.
         """
+        #if self.save_path == "None" and not self.temp_save:
+        
         if self.save_path == "None":
-            pass
+            return
+        if modell is None:
+            return  
+        modell.data.name = modell.data.name[-3:]
+        path_of_folder = self.save_path + "Motor_%04d/"%self.id_Nr
+        bpy.ops.object.select_all(action='DESELECT')
+        modell.select_set(True)
+        if addtional:
+            addtional.select_set(True)
+        name = modell.name
+        if self.color_render:
+            if name == "Bolt" and os.path.isfile(path_of_folder+name+'.obj'):
+                return
+            try:
+                bpy.ops.export_scene.obj(filepath=path_of_folder+name+'.obj', check_existing=True, use_selection=True, filter_glob='*.obj',)
+            except:
+                print("Error!")
         else:
-            if modell is None:
-                return  
-            modell.data.name = modell.data.name[-3:]
-            path_of_folder = self.save_path + "Motor_%04d/"%self.id_Nr
-            bpy.ops.object.select_all(action='DESELECT')
-            modell.select_set(True)
-            if addtional:
-                addtional.select_set(True)
-            name = modell.name
-            if self.color_render:
-                if name == "Bolt" and os.path.isfile(path_of_folder+name+'.obj'):
-                    return
-                try:
-                    bpy.ops.export_scene.obj(filepath=path_of_folder+name+'.obj', check_existing=True, use_selection=True, filter_glob='*.obj',)
-                except:
-                    print("Error!")
-            else:
-                if name == "Bolt" and os.path.isfile(path_of_folder+name+'.stl'):
-                    return
-                try:
-                    bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True, filter_glob='*.stl',)
-                except:
-                    print("Error!")
-            bpy.ops.object.select_all(action='DESELECT')
+            if name == "Bolt" and os.path.isfile(path_of_folder+name+'.stl'):
+                return
+            try:
+                bpy.ops.export_mesh.stl(filepath=path_of_folder+name+'.stl', check_existing=True, use_selection=True, filter_glob='*.stl',)
+            except:
+                print("Error!")
+        bpy.ops.object.select_all(action='DESELECT')
 
     def write_back(self,factory):
         pass
@@ -1152,3 +1191,88 @@ class Factory:
         bpy.context.view_layer.objects.active = self.general_Bolt
         self.general_Bolt.select_set(True)  
         bpy.ops.object.delete()
+
+    def create_corrision(self, obj, texture, corr_percent, part):
+        BoltCorrosion=bpy.data.materials.new(name='Corrosion')
+        BoltCorrosion.use_nodes=True
+
+        #obj.select_set(True)
+
+        obj.data.materials.append(BoltCorrosion)
+
+        obj.active_material = BoltCorrosion
+
+        principled1_node = BoltCorrosion.node_tree.nodes.get('Principled BSDF')
+        Output_node = BoltCorrosion.node_tree.nodes.get('Material Output')
+        #bpy.ops.mesh.uv_texture_add()
+        #bpy.ops.uv.smart_project()
+        principled1_node.location = (-234,460)
+        materia_table = self.Materia_Tables[part]
+
+        principled1_node.inputs[0].default_value = materia_table["diffuse_color"]
+        principled1_node.inputs[4].default_value = materia_table["metallic"]
+        principled1_node.inputs[7].default_value = materia_table["roughness"]
+        principled1_node.inputs[5].default_value = materia_table["specular_intensity"]
+
+
+        Mix_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeMixShader')
+        Mix_node.location = (90,100)
+        principled2_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeBsdfPrincipled')
+        principled2_node.location=(-234,-200)
+        principled2_node.inputs[3].default_value = (1,1,1,1)
+        principled2_node.inputs[4].default_value = 1
+        principled2_node.inputs[5].default_value = 0.5
+        principled2_node.inputs[7].default_value = 0.774
+        Bump_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeBump')
+        Bump_node.location = (-450,0)
+        Bump_node.invert = True
+        Bump_node.inputs[1].default_value = 1.4
+        Bump_node.inputs[0].default_value = 0
+        ColorRamp1_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeValToRGB')
+        ColorRamp1_node.location = (-600,460)
+        ColorRamp1_node.color_ramp.elements[1].position = 0.723
+        ColorRamp1_node.color_ramp.elements[0].position = 0.805
+        Voronoi_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeTexVoronoi')
+        Voronoi_node.location = (-700,0)
+        Voronoi_node.inputs[2].default_value = 2
+        ColorRamp2_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeValToRGB')
+        ColorRamp2_node.location = (-1100,0)
+        ColorRamp2_node.color_ramp.elements[1].position = 0.909
+        Noise_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeTexNoise')
+        Noise_node.location = (-1300,0)
+        Noise_node.inputs[2].default_value = 0.5
+        Noise_node.inputs[3].default_value = 16
+        Noise_node.inputs[4].default_value = 0.833
+        Mapping_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeMapping')
+        Mapping_node.location = (-1500,0)
+        TexCoord_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeTexCoord')
+        TexCoord_node.location = (-1700,0)
+        Img_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeTexImage')
+        Img_node.location = (500,500)
+        Image = bpy.data.images.load(self.Path_Corrision[texture])
+        Img_node.image = Image
+        link = BoltCorrosion.node_tree.links.new
+        link(Mix_node.outputs[0],Output_node.inputs[0])
+        link(ColorRamp1_node.outputs[0],Mix_node.inputs[0])
+        link(principled1_node.outputs[0],Mix_node.inputs[1])
+        link(principled2_node.outputs[0],Mix_node.inputs[2])
+        link(principled1_node.inputs[19],Bump_node.outputs[0])
+        link(principled2_node.inputs[19],Bump_node.outputs[0])
+        link(ColorRamp1_node.outputs[1],Bump_node.inputs[2])
+        link(ColorRamp1_node.inputs[0],Voronoi_node.outputs[1])
+        link(ColorRamp2_node.outputs[0],Voronoi_node.inputs[0])
+        link(ColorRamp2_node.inputs[0],Noise_node.outputs[1])
+        link(Mapping_node.outputs[0],Noise_node.inputs[0])
+        link(Mapping_node.inputs[0],TexCoord_node.outputs[3])
+        link(principled2_node.inputs[0],Img_node.outputs[0])
+        
+
+        if corr_percent < 50:
+            num = random.randrange(250, 280,1)
+        elif corr_percent >=50 and corr_percent <=95:
+            num = random.randrange(300, 400,1)
+        else :
+            num = random.randrange(280, 300,1)
+        ColorRamp2_node.color_ramp.elements[0].position =corr_percent/num
+
+        return BoltCorrosion

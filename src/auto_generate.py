@@ -8,7 +8,7 @@ def generate_param():
             "mf_Extension_Type_B" : random.choice(["mf_Extension_Type_1","mf_None"]),
             "mf_Gear_Orientation_1" : random.choice(['r0','r90', 'r180','r270']),
             "mf_Gear_Orientation_2" : random.choice(['r90', 'r180','r270']),
-            "mf_Flip" : random.choice([True,False]),
+            "mf_Mirror" : random.choice([True,False]),
             "mf_Color_Render" : False,
             "mf_Bottom_Length" : random.uniform(4, 8),
             "mf_Sub_Bottom_Length" : random.uniform(0.6, 2),

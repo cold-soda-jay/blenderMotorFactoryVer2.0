@@ -32,14 +32,32 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     init_z = 0
     id_Nr = 0
 
+    mf_Lower_Gear_XYZ = []
+    mf_Lower_Gear_ContainerDia = 0
+    mf_Lower_Gear_GearDia_Small = 0
+    mf_Lower_Gear_GearDia_Large = 0
+    mf_Lower_Gear_HoleDia = 0
+    mf_Upper_Gear_XYZ = []
+    mf_Upper_Gear_Position = 0
+    mf_Upper_Gear_ContainerDia = 0
+    mf_Upper_Gear_GearDia = 0
+    mf_Upper_Gear_HoleDia = 0
+
     MotorParameters = [
         "mf_Top_Type",
         "mf_Extension_Type_A",
         "mf_Extension_Type_B",
         "mf_Gear_Orientation_1",
         "mf_Gear_Orientation_2",
-        "mf_Flip",
+        "mf_Mirror",
         "mf_Color_Render",
+
+        "mf_Corrision_Render",
+        "mf_Corrision_Type_Bolt",
+        "mf_Corrision_Percent_Bolt",
+        "mf_Corrision_Type_Bottom",
+        "mf_Corrision_Percent_Bottom",
+
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
         "mf_Lower_Gear_Dia",
@@ -62,7 +80,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Upper_Gear_Bolt_Position_2_1",
         "mf_Upper_Gear_Bolt_Position_2_2",
         "mf_Upper_Gear_Bolt_Position_3",
-              
+
         "mf_Type_B_Height_1",
         "mf_Type_B_Height_2", 
         "mf_Gear_Bolt_Random_B",
@@ -73,6 +91,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Gear_Bolt_Right_B",
         "temp_save",
         "save_path",
+        "test",
         "mf_Combine",
 
         ]
@@ -83,13 +102,33 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Extension_Type_B",
         "mf_Gear_Orientation_1",
         "mf_Gear_Orientation_2",
-        "mf_Flip",
+        "mf_Mirror",
         "mf_Color_Render",
+
+        "mf_Corrision_Render",
+        "mf_Corrision_Type_Bolt",
+        "mf_Corrision_Percent_Bolt",
+        "mf_Corrision_Type_Bottom",
+        "mf_Corrision_Percent_Bottom",
+
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
-        "mf_Lower_Gear_Dia",
+        
         "mf_Lower_Gear_Position",
+        "mf_Lower_Gear_XYZ",
+        "mf_Lower_Gear_Dia",
+        "mf_Lower_Gear_ContainerDia",
+        "mf_Lower_Gear_GearDia_Small",
+        "mf_Lower_Gear_GearDia_Large",
+        "mf_Lower_Gear_HoleDia",
+        
+        "mf_Upper_Gear_Position",
+        "mf_Upper_Gear_XYZ",
         "mf_Upper_Gear_Dia",
+        "mf_Upper_Gear_ContainerDia",
+        "mf_Upper_Gear_GearDia",
+        "mf_Upper_Gear_HoleDia",
+
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
         "mf_Lower_Gear_Bolt_Random",
@@ -131,7 +170,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     mf_Extension_Type_A = EnumProperty( attr='mf_Extension_Type',
             name='Extension Area Type',
             description='Choose the type of extension area you would like',
-            items = Extention_Type_List_A, default = 'mf_Extension_Type_1')
+            items = Extention_Type_List_A, default = 'mf_Extension_Type_2')
     
     Extention_Type_List_B = [('mf_Extension_Type_1','Type 1','Type 1'),                                 
                  ('mf_None','None','None') 
@@ -167,20 +206,52 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             description='Rotation of gears and extension zone',
             items = Orientation_List_Type_2, default = 'r270')
 
-    mf_Flip : BoolProperty(name = "Flip",
+    mf_Mirror : BoolProperty(name = "Mirror",
                 default = False,
-                description = "Flip the gears")
+                description = "Mirror the gears")
 
-    # Set color rendering option
+    ########################## Set color rendering option ############################
     mf_Color_Render : BoolProperty(name = "Color Render",
                 default = False,
-                description = "Render clor or not")
+                description = "Render color or not")
+
+    Corrision_Type = [
+                ('Rust Red','Rust Red','Rust Red'),
+                ('Rust Blue','Rust Blue','Rust Blue'),
+                ('Rust Yellow', 'Rust Yellow', 'Rust Yellow'),
+                ('Rust Pink', 'Rust Pink', 'Rust Pink'),
+                ('Rust Green', 'Rust Green', 'Rust Green')
+        ]
+
+    mf_Corrision_Render : BoolProperty(name = "Corrision",
+                default = False,
+                description = "Render corrision or not")
+
+    mf_Corrision_Type_Bolt = EnumProperty( attr='mf_Corrision_Type_Bolt',
+            name='Bolt',
+            description='Type of corrisions of bolt',
+            items = Corrision_Type, default = 'Rust Red')   
+
+    mf_Corrision_Percent_Bolt = FloatProperty(attr='mf_Corrision_Percent_Bolt',
+            name='Corrision Percent of bolt', default = 20,
+            min =0, max = 100, 
+            description='Corrision Percent of bolt')
+
+    mf_Corrision_Type_Bottom = EnumProperty( attr='mf_Corrision_Type_Bottom',
+            name='Bottom',
+            description='Type of corrisions of bottom',
+            items = Corrision_Type, default = 'Rust Blue')   
+
+    mf_Corrision_Percent_Bottom = FloatProperty(attr='mf_Corrision_Percent_Bottom',
+            name='Corrision Percent of bottom', default = 40,
+            min =0, max = 100, 
+            description='Corrision Percent of bottom')
 
     ################## Bottom ########################################
     #Bottom Length      
     mf_Bottom_Length = FloatProperty(attr='mf_Bottom_Length',
             name='Bottom Length', default = 6.8,
-            min = 6.2, soft_min = 0, max = 10, 
+            min = 6.2, soft_min = 0, max = 8.2, 
             description='Length of the Bottom')
 
     #Sub Bottom length      
@@ -344,13 +415,19 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             items = Bit_Type_List, default = 'mf_Bit_Torx')
     
     ##################### Svae path #####################
+
+
     temp_save : BoolProperty(name = "Save the module ", 
-                default = False,
+                default = True,
                 description = "Save the module")
     
     save_path = StringProperty(name = "Save Path",
                 default = "None", maxlen=4096,
-                description = "Save the modell")        
+                description = "Save the modell")     
+
+    test : BoolProperty(name = "Save the module ", 
+    default = False,
+    description = "Save the module")   
     
     mf_Upper_Gear_Bolt_Position_1 = 0
 
@@ -379,11 +456,19 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             col.prop(self, 'mf_Gear_Orientation_1')
         
       
-        col.prop(self, 'mf_Flip')
-
-        col.prop(self, 'mf_Color_Render')
-
+        col.prop(self, 'mf_Mirror')
         col.prop(self, 'mf_Teeth_Inclination')
+        col.prop(self, 'mf_Color_Render')
+        if self.mf_Color_Render:
+            col.prop(self, "mf_Corrision_Render")
+            if self.mf_Corrision_Render:
+                col.label(text="Corrision")
+                col.prop(self, 'mf_Corrision_Type_Bolt')
+                col.prop(self, 'mf_Corrision_Percent_Bolt')
+                col.prop(self, 'mf_Corrision_Type_Bottom')
+                col.prop(self, 'mf_Corrision_Percent_Bottom')
+
+       
 
         col.label(text="Bottom")
         col.prop(self, 'mf_Bottom_Length') 
@@ -439,9 +524,10 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 if self.mf_Extension_Type_B == "mf_None" and self.mf_Gear_Bolt_Nummber_B == '3':
                     col.prop(self, 'mf_Gear_Bolt_Position_B_3')
         col.prop(self, 'mf_Combine')
-        col.prop(self, 'temp_save')
-        if self.temp_save:
-            col.prop(self, 'save_path')
+        #col.prop(self, 'temp_save')
+        #if self.temp_save:
+        col.prop(self, 'save_path')
+
         col.separator()
 
 
@@ -450,9 +536,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         return context.scene is not None
 
     def execute(self, context):
-        
         if  context.selected_objects != [] and context.active_object and \
-            ('motor_id' in context.active_object.keys()):    
+            ('motor_id' in context.active_object.keys()):  
             loc_list = self.get_old_loc(context)
             x = context.active_object.location.x
             y = context.active_object.location.y
@@ -463,11 +548,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             if self.mf_Combine:
                 obj.location.x=x
                 obj.location.y=y
-                obj.location.z=z
+            obj.location.z=z
             
-
         else:
             obj = self.create_motor()    
+            
         obj.data["Motor"] = True
         obj.data["change"] = False
         for prm in self.MotorParameters:
@@ -559,22 +644,24 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                         else:
                             space.shading.type = 'SOLID' # set the viewport shading to rendered
         motor["category_id"] = 9
-        creator.save_modell(motor)
-        creator.write_back(self)
-        creator.save_csv(self)  
-        if self.temp_save and self.save_path != "None":
-           bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    
+          
+        if self.save_path != "None":
+            self.calculate_positions(creator)
+            creator.save_modell(motor)
+            creator.write_back(self)
+            creator.save_csv(self)
+            bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    
 
-           self.temp_save = False   
-           self.save_path = "None" 
+            self.save_path = "None" 
         creator.clear_bolt() 
 
-        self.test(creator)    
+        #self.test(creator)    
         return motor
 
     def success_save(self,okay,context):
         text = "Module saved under " + str(self.save_path)+ "Motor_%04d/"%self.id_Nr#"Motor_"+str(self.id_Nr)+'/'
         okay.layout.label(text=text)
+
     
     def delete_motor(self, contex):
         scene = bpy.context.scene
@@ -614,9 +701,42 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             except:
                 continue
         
+    def calculate_positions(self, creator):
+        
+        x = self.mf_Lower_Gear_Dia/2
+        y = creator.BOTTOM_DIA/4
+        z = self.mf_Bottom_Length + self.mf_Sub_Bottom_Length + self.mf_Lower_Gear_Position
+
+        if self.mf_Extension_Type_A == 'mf_Extension_Type_1':
+               gear_orientation = self.mf_Gear_Orientation_1
+                #self.param.append("mf_Gear_Orientation_1")
+        elif self.mf_Extension_Type_A == 'mf_Extension_Type_2':                          
+            gear_orientation = self.mf_Gear_Orientation_2
+            #self.param.append("mf_Gear_Orientation_2")
+        else:
+            gear_orientation = self.mf_Gear_Orientation_1
+            #self.param.append("mf_Gear_Orientation_2")
+        rotation, length_relativ, mirror = creator.orient_dict[gear_orientation] 
+        x_large = self.mf_Upper_Gear_Dia/2 - 0.8
+        y_large = creator.BOTTOM_DIA/4 - length_relativ/6
+        z_large = self.mf_Bottom_Length + self.mf_Sub_Bottom_Length + self.mf_Lower_Gear_Position + self.mf_Upper_Gear_Dia/2 + 0.2
+        
+        self.mf_Lower_Gear_XYZ = [x,y,z]
+        self.mf_Lower_Gear_ContainerDia = self.mf_Lower_Gear_Dia
+        self.mf_Lower_Gear_GearDia_Small = self.mf_Lower_Gear_Dia * 0.2
+        self.mf_Lower_Gear_GearDia_Large = self.mf_Lower_Gear_Dia * 0.6
+        self.mf_Lower_Gear_HoleDia = 1/2
+
+        self.mf_Upper_Gear_XYZ = [x_large, y_large, z_large]
+        self.mf_Upper_Gear_Position = self.mf_Lower_Gear_Position + self.mf_Upper_Gear_Dia/2 + 0.2
+        self.mf_Upper_Gear_ContainerDia = self.mf_Upper_Gear_Dia
+        self.mf_Upper_Gear_GearDia = self.mf_Upper_Gear_Dia * 0.7
+        self.mf_Upper_Gear_HoleDia = 1.6/2
 
 
-    def test(self,creator):
+
+
+    def test_asdf(self,creator):
         #creator.create_rotor()
         #creator.create_internal_gear((0,0,20), 2.6, 3,number = 30)
         pass

@@ -114,7 +114,7 @@ class Motor_Creator(Factory):
         cyl["motor_id"] = self.motor_id
         
         if self.color_render:
-            self.rend_color(cyl, "Metall")
+            self.rend_color(cyl, "Metall", texture=self.corr_type_bottom, corr_percent=self.corr_percent_bottom)
             self.rend_color(cyl_2, "Magnet")
         cyl.name = "Bottom"
 
@@ -555,12 +555,26 @@ class Type_A(Motor_Creator):
                                 "mf_Top_Type",
                                 "mf_Extension_Type_A",
                                 "mf_Gear_Orientation_2",
-                                "mf_Flip",
+                                "mf_Mirror",
+                                "mf_Color_Render",
+
                                 "mf_Bottom_Length",
                                 "mf_Sub_Bottom_Length",
-                                "mf_Lower_Gear_Dia",
                                 "mf_Lower_Gear_Position",
-                                "mf_Upper_Gear_Dia",                                
+                                "mf_Lower_Gear_XYZ",
+                                "mf_Lower_Gear_Dia",
+                                "mf_Lower_Gear_ContainerDia",
+                                "mf_Lower_Gear_GearDia_Small",
+                                "mf_Lower_Gear_GearDia_Large",
+                                "mf_Lower_Gear_HoleDia",
+
+                                "mf_Upper_Gear_Position",
+                                "mf_Upper_Gear_XYZ",
+                                "mf_Upper_Gear_Dia",
+                                "mf_Upper_Gear_ContainerDia",
+                                "mf_Upper_Gear_GearDia",
+                                "mf_Upper_Gear_HoleDia",    
+
                                 "mf_Bit_Type",
                                 "mf_Bolt_Orientation",
                                 "mf_Lower_Gear_Bolt_Random",
@@ -573,6 +587,13 @@ class Type_A(Motor_Creator):
 
             if self.ex_type == 'mf_Extension_Type_1':
                 self.motor_param[2] = "mf_Gear_Orientation_1"
+            if self.color_render:
+                self.motor_param.append("mf_Corrision_Render")
+                if self.rend_corrision:
+                    self.motor_param.append("mf_Corrision_Type_Bolt")
+                    self.motor_param.append("mf_Corrision_Percent_Bolt")
+                    self.motor_param.append("mf_Corrision_Type_Bottom")
+                    self.motor_param.append("mf_Corrision_Percent_Bottom")
             
             self.l_bolt_list = []
             self.s_bolt_list = []
@@ -884,7 +905,7 @@ class Type_A(Motor_Creator):
 
                 ### Create inner gear
                 in_gear_s = self.create_internal_gear((position[0], position[1], position[2]-0.3*length), length*0.4, radius*0.6, 40, thickness=0.7)
-                in_gear_l = self.create_internal_gear(position, length*0.8, radius*0.2, 10, thickness=0.3)
+                in_gear_l = self.create_internal_gear(position, length*0.75, radius*0.2, 10, thickness=0.3)
                 in_gear = self.combine_all_obj(in_gear_s,[in_gear_l])
                 bpy.context.view_layer.objects.active = in_gear
                 bpy.ops.transform.rotate(value=rotation[0],orient_axis=rotation[1]) 
@@ -1012,7 +1033,7 @@ class Type_A(Motor_Creator):
 
         if self.ex_type == 'mf_Extension_Type_2':
             angle_1 = 15
-            angle_2 = 0
+            angle_2 = 7
             s_length_5 = 3.5
         elif self.ex_type == 'mf_Extension_Type_1':
             angle_1 = 30
@@ -1023,7 +1044,7 @@ class Type_A(Motor_Creator):
 
         angle_3 = 35
 
-        x = large_gear_position[0]
+        x = large_gear_position[0] 
         y = large_gear_position[1] - gear_length/2 + 0.4
         z = large_gear_position[2]
 
@@ -1524,11 +1545,19 @@ class Type_B(Motor_Creator):
                                 "mf_Top_Type",
                                 "mf_Extension_Type_B",
                                 "mf_Gear_Orientation_1",
-                                "mf_Flip",
+                                "mf_Mirror",
+                                "mf_Color_Render",
+
                                 "mf_Bottom_Length",
                                 "mf_Sub_Bottom_Length",
-                                "mf_Lower_Gear_Dia",
                                 "mf_Lower_Gear_Position",
+                                "mf_Lower_Gear_XYZ",
+                                "mf_Lower_Gear_Dia",
+                                "mf_Lower_Gear_ContainerDia",
+                                "mf_Lower_Gear_GearDia_Small",
+                                "mf_Lower_Gear_GearDia_Large",
+                                "mf_Lower_Gear_HoleDia",
+
                                 "mf_Type_B_Height_1",
                                 "mf_Type_B_Height_2",
                                 "mf_Bit_Type",
@@ -1541,6 +1570,15 @@ class Type_B(Motor_Creator):
                                 ] 
             if  self.gear_bolt_num == 3 and self.ex_type == 'mf_None':
                 self.motor_param.append("mf_Gear_Bolt_Position_B_3") 
+            if self.color_render:
+                self.motor_param.append("mf_Corrision_Render")
+                if self.rend_corrision:
+                    self.motor_param.append("mf_Corrision_Type_Bolt")
+                    self.motor_param.append("mf_Corrision_Percent_Bolt")
+                    self.motor_param.append("mf_Corrision_Type_Bottom")
+                    self.motor_param.append("mf_Corrision_Percent_Bottom")
+
+
 
     def write_back(self,factory):
         if self.bolt_random:

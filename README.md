@@ -123,7 +123,7 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 |mf_Corrision_Render|Render corrision or not (True, False)|
 |mf_Corrision_Type_Bolt|Type of corrisions of bolt (Rust Red, Rust Blue, Rust Yellow, Rust Pink, Rust Green) |
 |mf_Corrision_Percent_Bolt|Corrision Percent of bolt [0,100]|
-|mf_Corrision_Type_Bottom|Type of corrisions of bottom (Rust Red, Rust Blue, Rust Yellow, Rust Pink, Rust Green) |
+|mf_Corrision_Type_Bottom|Type of corrisions of bottom (Rust Red, Rust Blue,  Rust Gray, Rust Gray Light, Rust Yellow, Rust Pink, Rust Green) |
 |mf_Corrision_Percent_Bottom| Corrision Percent of bottom [0, 100]|
 |mf_Bottom_Length| Length of bottom part: Vaule can be floate in range [4, 8].|
 |mf_Sub_Bottom_Length| Length of sub bottom part (Small cylinder under): Vaule can be floate in range [0.6, 2]. |

@@ -218,6 +218,8 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     Corrision_Type = [
                 ('Rust Red','Rust Red','Rust Red'),
                 ('Rust Blue','Rust Blue','Rust Blue'),
+                ('Rust Gray', 'Rust Gray', 'Rust Gray'),
+                ('Rust Gray Light', 'Rust Gray Light', 'Rust Gray Light'),
                 ('Rust Yellow', 'Rust Yellow', 'Rust Yellow'),
                 ('Rust Pink', 'Rust Pink', 'Rust Pink'),
                 ('Rust Green', 'Rust Green', 'Rust Green')

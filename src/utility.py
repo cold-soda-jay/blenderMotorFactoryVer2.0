@@ -177,7 +177,10 @@ class Factory:
                         'Rust Blue': path+"/materials/rust_blue.jpg",
                         'Rust Pink': path+"/materials/rust_pink.jpg",
                         'Rust Green': path+"/materials/rust_green.jpg",
-                        'Rust Yellow': path+"/materials/rust_yellow.jpg"
+                        'Rust Yellow': path+"/materials/rust_yellow.jpg",
+                        'Rust Gray' : path+"/materials/rust_gray.jpg",
+                        'Rust Gray Light' : path+"/materials/rust_gray_light.jpg",
+                        
                     }
 
     def __init__(self,factory):

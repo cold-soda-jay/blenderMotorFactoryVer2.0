@@ -19,6 +19,13 @@ This is an blender addon which can create motor. We parameterized many features 
 
 ## 2. Advanced
 
+### 2.1 Color render and Corrision render
+
+In this version, the corrision of the motor can also be simulated. 
+
+<div align="left"><img src="pic\corrision.png" alt="Image" style="zoom:0%;" /></div>
+
+
 ### 2.1 Save model
 
 This Addon allow user generate various model and save the parameter as well as model as .stl file. To save the model, you can run the command in blender Console (**Shift + F4** to open it): 
@@ -110,7 +117,14 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 |mf_Extension_Type_B| Extension Type for Type B: Vaule can be  ('mf_Extension_Type_1', 'mf_None') |
 |mf_Gear_Orientation_1| Orientation of top part for extension type 1: Vaule can be  ('r0', r90', 'r180', 'r270')|
 |mf_Gear_Orientation_2| Orientation of top part for extension type 2: Vaule can be  ('r90', 'r180', 'r270')|
-|mf_Flip| Wheather the top part ne fliped: Vaule can be  (True, Flase)|
+|mf_Mirror| Wheather the top part ne fliped: Vaule can be  (True, False)|
+|mf_Color_Render| Render color or not (Ture, False)|
+|mf_Teeth_Inclination| Teeth Inclination of gears [-20, 20]|
+|mf_Corrision_Render|Render corrision or not (True, False)|
+|mf_Corrision_Type_Bolt|Type of corrisions of bolt (Rust Red, Rust Blue, Rust Yellow, Rust Pink, Rust Green) |
+|mf_Corrision_Percent_Bolt|Corrision Percent of bolt [0,100]|
+|mf_Corrision_Type_Bottom|Type of corrisions of bottom (Rust Red, Rust Blue, Rust Yellow, Rust Pink, Rust Green) |
+|mf_Corrision_Percent_Bottom| Corrision Percent of bottom [0, 100]|
 |mf_Bottom_Length| Length of bottom part: Vaule can be floate in range [4, 8].|
 |mf_Sub_Bottom_Length| Length of sub bottom part (Small cylinder under): Vaule can be floate in range [0.6, 2]. |
 |mf_Lower_Gear_Dia| Diameter of lower gear: Vaule can be floate in range [3.5, 4.5]|

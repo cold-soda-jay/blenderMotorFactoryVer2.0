@@ -13,7 +13,9 @@ This is an blender addon which can create motor. We parameterized many features 
 
 1. Download the project 
     - Clone project via ``git clone https://github.com/cold-soda-jay/blenderMotorFactoryVer2.0.git`` , then pack folder ***src*** into a zip file 
+    
     **OR**
+
     - Download zip file from realese.
 2. In Blender, go *Edit > Preference > Install* and find the zip file. After installing make sure it is activated.
 3. Now you can find the Addon in *Add >Mesh >Motor*
@@ -24,7 +26,7 @@ This is an blender addon which can create motor. We parameterized many features 
 
 In this version, the corrosion of the motor can also be simulated. 
 
-<div align="left"><img src="pic\corrosion.png" alt="Image" style="zoom:0%;" /></div>
+<div align="left"><img src="pic\corrision.png" alt="Image" style="zoom:0%;" /></div>
 
 
 ### 2.1 Save model

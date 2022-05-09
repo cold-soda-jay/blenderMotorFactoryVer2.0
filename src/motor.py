@@ -588,12 +588,12 @@ class Type_A(Motor_Creator):
             if self.ex_type == 'mf_Extension_Type_1':
                 self.motor_param[2] = "mf_Gear_Orientation_1"
             if self.color_render:
-                self.motor_param.append("mf_Corrision_Render")
-                if self.rend_corrision:
-                    self.motor_param.append("mf_Corrision_Type_Bolt")
-                    self.motor_param.append("mf_Corrision_Percent_Bolt")
-                    self.motor_param.append("mf_Corrision_Type_Bottom")
-                    self.motor_param.append("mf_Corrision_Percent_Bottom")
+                self.motor_param.append("mf_corrosion_Render")
+                if self.rend_corrosion:
+                    self.motor_param.append("mf_corrosion_Type_Bolt")
+                    self.motor_param.append("mf_corrosion_Percent_Bolt")
+                    self.motor_param.append("mf_corrosion_Type_Bottom")
+                    self.motor_param.append("mf_corrosion_Percent_Bottom")
             
             self.l_bolt_list = []
             self.s_bolt_list = []
@@ -1029,16 +1029,28 @@ class Type_A(Motor_Creator):
         s_length_2 = 5.5
         s_length_3 = 1.5
         s_length_4 = 4.5
-        s_length_6 = 3
 
         if self.ex_type == 'mf_Extension_Type_2':
             angle_1 = 15
+            angle_1_1 = 30
             angle_2 = 7
+            angle_4 = 0
+            angle_5 = 5
             s_length_5 = 3.5
+            s_length_2 = 4
+            s_length_6 = 2
+
+
         elif self.ex_type == 'mf_Extension_Type_1':
             angle_1 = 30
+            angle_1_1 = angle_1
             s_length_5 = 5
             angle_2 = 25
+            angle_4 = angle_2
+            angle_5 =  angle_2
+            s_length_6 = 3
+
+
         else:
             return None
 
@@ -1053,8 +1065,8 @@ class Type_A(Motor_Creator):
         p1x = x + s_length_1 * math.cos(radians(angle_1))
         p1z = z + s_length_1 * math.sin(radians(angle_1))
 
-        p2x = x - s_length_1 * math.cos(radians(angle_1))
-        p2z = z - s_length_1 * math.sin(radians(angle_1))
+        p2x = x - s_length_1 * math.cos(radians(angle_1_1))
+        p2z = z - s_length_1 * math.sin(radians(angle_1_1))
 
         p3x = p1x + s_length_2 * math.sin(radians(angle_1))
         p3z = p1z - s_length_2 * math.cos(radians(angle_1))
@@ -1062,11 +1074,11 @@ class Type_A(Motor_Creator):
         p3hx = p3x - s_length_3 * math.sin(radians(angle_2))
         p3hz = p3z - s_length_3 * math.cos(radians(angle_2))
 
-        p4x = p2x + s_length_4 * math.sin(radians(angle_2))
-        p4z = p2z - s_length_4 * math.cos(radians(angle_2))
-
-        p5x = p3x - s_length_5 * math.sin(radians(angle_2))
-        p5z = p3z - s_length_5 * math.cos(radians(angle_2))
+        p4x = p2x + s_length_4 * math.sin(radians(angle_5))
+        p4z = p2z - s_length_4 * math.cos(radians(angle_5))
+        
+        p5x = p3x - s_length_5 * math.sin(radians(angle_4))
+        p5z = p3z - s_length_5 * math.cos(radians(angle_4))
 
         p6x = p4x
         p6z = p4z - s_length_6
@@ -1571,12 +1583,12 @@ class Type_B(Motor_Creator):
             if  self.gear_bolt_num == 3 and self.ex_type == 'mf_None':
                 self.motor_param.append("mf_Gear_Bolt_Position_B_3") 
             if self.color_render:
-                self.motor_param.append("mf_Corrision_Render")
-                if self.rend_corrision:
-                    self.motor_param.append("mf_Corrision_Type_Bolt")
-                    self.motor_param.append("mf_Corrision_Percent_Bolt")
-                    self.motor_param.append("mf_Corrision_Type_Bottom")
-                    self.motor_param.append("mf_Corrision_Percent_Bottom")
+                self.motor_param.append("mf_corrosion_Render")
+                if self.rend_corrosion:
+                    self.motor_param.append("mf_corrosion_Type_Bolt")
+                    self.motor_param.append("mf_corrosion_Percent_Bolt")
+                    self.motor_param.append("mf_corrosion_Type_Bottom")
+                    self.motor_param.append("mf_corrosion_Percent_Bottom")
 
 
 

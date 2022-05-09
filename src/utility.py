@@ -169,19 +169,15 @@ class Factory:
                         },
             }
 
-    parent_folder = os.path.realpath(__file__)
-    index = parent_folder.index("src")
-    path = parent_folder[:index+3]
-    Path_Corrision = {
-                        'Rust Red': path+"/materials/rust.jpg",
-                        'Rust Blue': path+"/materials/rust_blue.jpg",
-                        'Rust Pink': path+"/materials/rust_pink.jpg",
-                        'Rust Green': path+"/materials/rust_green.jpg",
-                        'Rust Yellow': path+"/materials/rust_yellow.jpg",
-                        'Rust Gray' : path+"/materials/rust_gray.jpg",
-                        'Rust Gray Light' : path+"/materials/rust_gray_light.jpg",
-                        
-                    }
+    #parent_folder = os.path.dirname(__file__)
+    #index = parent_folder.index("src")
+    path = os.path.dirname(__file__)
+    rust_key = ['Rust %s'%x for x in range(1,10)]
+    rust_path = []
+    for x in range(1,10): rust_path.append(path+"/materials/rust%s.jpg"%x)
+    Path_corrosion = dict(zip(rust_key, rust_path))
+    Path_corrosion['None'] = ''
+
 
     def __init__(self,factory):
         """initiate variables.
@@ -212,22 +208,22 @@ class Factory:
         
         self.color_render = factory.mf_Color_Render
 
-        self.rend_corrision = factory.mf_Corrision_Render
-        self.corr_type_bolt = factory.mf_Corrision_Type_Bolt
-        self.corr_percent_bolt = factory.mf_Corrision_Percent_Bolt
-        self.corr_type_bottom = factory.mf_Corrision_Type_Bottom
-        self.corr_percent_bottom = factory.mf_Corrision_Percent_Bottom
+        self.rend_corrosion = True
+        self.corr_type_bolt = factory.mf_corrosion_Type_Bolt
+        self.corr_percent_bolt = factory.mf_corrosion_Percent_Bolt
+        self.corr_type_bottom = factory.mf_corrosion_Type_Bottom
+        self.corr_percent_bottom = factory.mf_corrosion_Percent_Bottom
         
 
         self.motor_param += [
             "mf_Top_Type",
             "mf_Mirror",
             "mf_Color_Render",
-            "mf_Corrision_Render",
-            "mf_Corrision_Type_Bolt",
-            "mf_Corrision_Percent_Bolt",
-            "mf_Corrision_Type_Bottom",
-            "mf_Corrision_Percent_Bottom",
+            "mf_corrosion_Render",
+            "mf_corrosion_Type_Bolt",
+            "mf_corrosion_Percent_Bolt",
+            "mf_corrosion_Type_Bottom",
+            "mf_corrosion_Percent_Bottom",
             "mf_Bottom_Length",
             "mf_Sub_Bottom_Length",
             "mf_Bit_Type",
@@ -793,10 +789,10 @@ class Factory:
             part (str): Keyword for color rendering
         """
         if self.color_render:
-            if texture is not None and self.rend_corrision and corr_percent!= 0:
-                corrision = self.create_corrision(obj, texture, corr_percent, part)
+            if texture is not None and texture != 'None' and corr_percent!= 0:
+                corrosion = self.create_corrosion(obj, texture, corr_percent, part)
                 
-                obj.data.materials.append(corrision)
+                obj.data.materials.append(corrosion)
             else:
                 mat = bpy.data.materials.new(name="Material")
                 materia_table = self.Materia_Tables[part]
@@ -808,7 +804,7 @@ class Factory:
                 obj.data.materials.append(mat)
                 
                     #pass
-                    #obj.data.materials.append(corrision)
+                    #obj.data.materials.append(corrosion)
             bpy.context.view_layer.objects.active = None
 
     def rotate_object(self, object_rotate):
@@ -1195,7 +1191,7 @@ class Factory:
         self.general_Bolt.select_set(True)  
         bpy.ops.object.delete()
 
-    def create_corrision(self, obj, texture, corr_percent, part):
+    def create_corrosion(self, obj, texture, corr_percent, part):
         BoltCorrosion=bpy.data.materials.new(name='Corrosion')
         BoltCorrosion.use_nodes=True
 
@@ -1252,7 +1248,7 @@ class Factory:
         TexCoord_node.location = (-1700,0)
         Img_node = BoltCorrosion.node_tree.nodes.new('ShaderNodeTexImage')
         Img_node.location = (500,500)
-        Image = bpy.data.images.load(self.Path_Corrision[texture])
+        Image = bpy.data.images.load(self.Path_corrosion[texture])
         Img_node.image = Image
         link = BoltCorrosion.node_tree.links.new
         link(Mix_node.outputs[0],Output_node.inputs[0])

@@ -52,11 +52,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Mirror",
         "mf_Color_Render",
 
-        "mf_Corrision_Render",
-        "mf_Corrision_Type_Bolt",
-        "mf_Corrision_Percent_Bolt",
-        "mf_Corrision_Type_Bottom",
-        "mf_Corrision_Percent_Bottom",
+        "mf_corrosion_Render",
+        "mf_corrosion_Type_Bolt",
+        "mf_corrosion_Percent_Bolt",
+        "mf_corrosion_Type_Bottom",
+        "mf_corrosion_Percent_Bottom",
 
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
@@ -64,7 +64,6 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Lower_Gear_Position",
         "mf_Upper_Gear_Dia",
 
-        
         "mf_Bit_Type",
         "mf_Bolt_Orientation",
         "mf_Lower_Gear_Bolt_Random",
@@ -105,11 +104,11 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         "mf_Mirror",
         "mf_Color_Render",
 
-        "mf_Corrision_Render",
-        "mf_Corrision_Type_Bolt",
-        "mf_Corrision_Percent_Bolt",
-        "mf_Corrision_Type_Bottom",
-        "mf_Corrision_Percent_Bottom",
+        "mf_corrosion_Render",
+        "mf_corrosion_Type_Bolt",
+        "mf_corrosion_Percent_Bolt",
+        "mf_corrosion_Type_Bottom",
+        "mf_corrosion_Percent_Bottom",
 
         "mf_Bottom_Length",
         "mf_Sub_Bottom_Length",
@@ -170,7 +169,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
     mf_Extension_Type_A = EnumProperty( attr='mf_Extension_Type',
             name='Extension Area Type',
             description='Choose the type of extension area you would like',
-            items = Extention_Type_List_A, default = 'mf_Extension_Type_2')
+            items = Extention_Type_List_A, default = 'mf_Extension_Type_1')
     
     Extention_Type_List_B = [('mf_Extension_Type_1','Type 1','Type 1'),                                 
                  ('mf_None','None','None') 
@@ -215,39 +214,42 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
                 default = False,
                 description = "Render color or not")
 
-    Corrision_Type = [
-                ('Rust Red','Rust Red','Rust Red'),
-                ('Rust Blue','Rust Blue','Rust Blue'),
-                ('Rust Gray', 'Rust Gray', 'Rust Gray'),
-                ('Rust Gray Light', 'Rust Gray Light', 'Rust Gray Light'),
-                ('Rust Yellow', 'Rust Yellow', 'Rust Yellow'),
-                ('Rust Pink', 'Rust Pink', 'Rust Pink'),
-                ('Rust Green', 'Rust Green', 'Rust Green')
+    corrosion_Type = [
+                ('None', 'None', 'None'),
+                ('Rust 1','Rust 1','Rust 1'),
+                ('Rust 2','Rust 2','Rust 2'),
+                ('Rust 3','Rust 3','Rust 3'),
+                ('Rust 4','Rust 4','Rust 4'),
+                ('Rust 5','Rust 5','Rust 5'),
+                ('Rust 6','Rust 6','Rust 6'),
+                ('Rust 7','Rust 7','Rust 7'),
+                ('Rust 8','Rust 8','Rust 8'),
+                ('Rust 9','Rust 9','Rust 9'),
         ]
 
-    mf_Corrision_Render : BoolProperty(name = "Corrision",
-                default = False,
-                description = "Render corrision or not")
+    mf_corrosion_Render : BoolProperty(name = "corrosion",
+                default = True,
+                description = "Render corrosion or not")
 
-    mf_Corrision_Type_Bolt = EnumProperty( attr='mf_Corrision_Type_Bolt',
+    mf_corrosion_Type_Bolt = EnumProperty( attr='mf_corrosion_Type_Bolt',
             name='Bolt',
-            description='Type of corrisions of bolt',
-            items = Corrision_Type, default = 'Rust Red')   
+            description='Type of corrosions of bolt',
+            items = corrosion_Type, default = 'Rust 1')   
 
-    mf_Corrision_Percent_Bolt = FloatProperty(attr='mf_Corrision_Percent_Bolt',
-            name='Corrision Percent of bolt', default = 20,
+    mf_corrosion_Percent_Bolt = FloatProperty(attr='mf_corrosion_Percent_Bolt',
+            name='corrosion Percent of bolt', default = 20,
             min =0, max = 100, 
-            description='Corrision Percent of bolt')
+            description='corrosion Percent of bolt')
 
-    mf_Corrision_Type_Bottom = EnumProperty( attr='mf_Corrision_Type_Bottom',
+    mf_corrosion_Type_Bottom = EnumProperty( attr='mf_corrosion_Type_Bottom',
             name='Bottom',
-            description='Type of corrisions of bottom',
-            items = Corrision_Type, default = 'Rust Blue')   
+            description='Type of corrosions of bottom',
+            items = corrosion_Type, default = 'Rust 1')   
 
-    mf_Corrision_Percent_Bottom = FloatProperty(attr='mf_Corrision_Percent_Bottom',
-            name='Corrision Percent of bottom', default = 40,
+    mf_corrosion_Percent_Bottom = FloatProperty(attr='mf_corrosion_Percent_Bottom',
+            name='corrosion Percent of bottom', default = 40,
             min =0, max = 100, 
-            description='Corrision Percent of bottom')
+            description='corrosion Percent of bottom')
 
     ################## Bottom ########################################
     #Bottom Length      
@@ -462,13 +464,13 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
         col.prop(self, 'mf_Teeth_Inclination')
         col.prop(self, 'mf_Color_Render')
         if self.mf_Color_Render:
-            col.prop(self, "mf_Corrision_Render")
-            if self.mf_Corrision_Render:
-                col.label(text="Corrision")
-                col.prop(self, 'mf_Corrision_Type_Bolt')
-                col.prop(self, 'mf_Corrision_Percent_Bolt')
-                col.prop(self, 'mf_Corrision_Type_Bottom')
-                col.prop(self, 'mf_Corrision_Percent_Bottom')
+            #col.prop(self, "mf_corrosion_Render")
+            #if self.mf_corrosion_Render:
+            col.label(text="corrosion")
+            col.prop(self, 'mf_corrosion_Type_Bolt')
+            col.prop(self, 'mf_corrosion_Percent_Bolt')
+            col.prop(self, 'mf_corrosion_Type_Bottom')
+            col.prop(self, 'mf_corrosion_Percent_Bottom')
 
        
 
@@ -652,7 +654,7 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
             creator.save_modell(motor)
             creator.write_back(self)
             creator.save_csv(self)
-            bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    
+            #bpy.context.window_manager.popup_menu(self.success_save, title="Info", icon='PLUGIN')    
 
             self.save_path = "None" 
         creator.clear_bolt() 

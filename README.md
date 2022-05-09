@@ -19,11 +19,11 @@ This is an blender addon which can create motor. We parameterized many features 
 
 ## 2. Advanced
 
-### 2.1 Color render and Corrision render
+### 2.1 Color render and corrosion render
 
-In this version, the corrision of the motor can also be simulated. 
+In this version, the corrosion of the motor can also be simulated. 
 
-<div align="left"><img src="pic\corrision.png" alt="Image" style="zoom:0%;" /></div>
+<div align="left"><img src="pic\corrosion.png" alt="Image" style="zoom:0%;" /></div>
 
 
 ### 2.1 Save model
@@ -105,10 +105,17 @@ Every bolt will have a vector to store its position and orientation. In CSV the 
 ### 2.3 Auto generation
 
 
+**IMPORTANT**: Make sure blender is in the enviroment path. To check it, try command
+
+```
+blender
+```
+inside the terminal. If the blender starts normally, it means everything is fine. Otherwise you need to add path of blender into path. This [link](https://superuser.com/questions/689333/how-to-add-installed-program-to-command-prompt-in-windows) might be helpful.
+
 To generate more models at once, you can use script ``./src/auto_generate.py``. In the script you can set the number of generated models and define several parameters when generating. Here are all parameters:
 
 
-**!!Units are cm, degree**
+>Units are cm, degree
 
 | Variable| Explain|
 | :-: |:-|
@@ -120,11 +127,11 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 |mf_Mirror| Wheather the top part ne fliped: Vaule can be  (True, False)|
 |mf_Color_Render| Render color or not (Ture, False)|
 |mf_Teeth_Inclination| Teeth Inclination of gears [-20, 20]|
-|mf_Corrision_Render|Render corrision or not (True, False)|
-|mf_Corrision_Type_Bolt|Type of corrisions of bolt (Rust Red, Rust Blue, Rust Yellow, Rust Pink, Rust Green) |
-|mf_Corrision_Percent_Bolt|Corrision Percent of bolt [0,100]|
-|mf_Corrision_Type_Bottom|Type of corrisions of bottom (Rust Red, Rust Blue,  Rust Gray, Rust Gray Light, Rust Yellow, Rust Pink, Rust Green) |
-|mf_Corrision_Percent_Bottom| Corrision Percent of bottom [0, 100]|
+|mf_corrosion_Render|Render corrosion or not (True, False)|
+|mf_corrosion_Type_Bolt|Type of corrosions of bolt (Rust Red, Rust Blue, Rust Yellow, Rust Pink, Rust Green) |
+|mf_corrosion_Percent_Bolt|corrosion Percent of bolt [0,100]|
+|mf_corrosion_Type_Bottom|Type of corrosions of bottom (Rust Red, Rust Blue,  Rust Gray, Rust Gray Light, Rust Yellow, Rust Pink, Rust Green) |
+|mf_corrosion_Percent_Bottom| corrosion Percent of bottom [0, 100]|
 |mf_Bottom_Length| Length of bottom part: Vaule can be floate in range [4, 8].|
 |mf_Sub_Bottom_Length| Length of sub bottom part (Small cylinder under): Vaule can be floate in range [0.6, 2]. |
 |mf_Lower_Gear_Dia| Diameter of lower gear: Vaule can be floate in range [3.5, 4.5]|
@@ -157,7 +164,12 @@ To generate more models at once, you can use script ``./src/auto_generate.py``. 
 After setting the parameters, you can runthe script in command line with following command:
 
 ```
-path/of/blender -b -P path/of/auto_generate.py 1> nul
+python path/of/auto_generate.py NUMBER_OF_GENERATION
+```
+
+e.g.: Generate 10 different motors.
+```
+python auto_generate.py 10
 ```
 
 See more details in `auto_generate.py`

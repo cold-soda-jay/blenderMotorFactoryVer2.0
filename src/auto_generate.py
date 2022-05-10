@@ -95,8 +95,9 @@ if __name__ == "__main__":
 
     data = {}
     save_path = "C:/Users/linuk/test/"
-    data['save_path']= save_path# Add other param like this
-
+    # Add other param like this
+    data['save_path']= save_path
+    data['mf_Color_Render']= random.choice([True,False])
     ######################################################
     ################# Specify Parameters #################
     ######################################################

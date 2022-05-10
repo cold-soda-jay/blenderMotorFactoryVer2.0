@@ -1029,16 +1029,18 @@ class Type_A(Motor_Creator):
         s_length_2 = 5.5
         s_length_3 = 1.5
         s_length_4 = 4.5
+        s_length_6 = 3
+
 
         if self.ex_type == 'mf_Extension_Type_2':
-            angle_1 = 15
+            angle_1 = 20
             angle_1_1 = 30
             angle_2 = 7
             angle_4 = 0
             angle_5 = 5
-            s_length_5 = 3.5
-            s_length_2 = 4
-            s_length_6 = 2
+            s_length_5 = 4.5
+            s_length_2 = 4.5
+
 
 
         elif self.ex_type == 'mf_Extension_Type_1':
@@ -1048,7 +1050,6 @@ class Type_A(Motor_Creator):
             angle_2 = 25
             angle_4 = angle_2
             angle_5 =  angle_2
-            s_length_6 = 3
 
 
         else:
@@ -1071,8 +1072,10 @@ class Type_A(Motor_Creator):
         p3x = p1x + s_length_2 * math.sin(radians(angle_1))
         p3z = p1z - s_length_2 * math.cos(radians(angle_1))
 
-        p3hx = p3x - s_length_3 * math.sin(radians(angle_2))
-        p3hz = p3z - s_length_3 * math.cos(radians(angle_2))
+        #p3hx = p3x - s_length_3 * math.sin(radians(angle_2))
+        #p3hz = p3z - s_length_3 * math.cos(radians(angle_2))
+        p3hx = p3x
+        p3hz = p3z - 1.5
 
         p4x = p2x + s_length_4 * math.sin(radians(angle_5))
         p4z = p2z - s_length_4 * math.cos(radians(angle_5))

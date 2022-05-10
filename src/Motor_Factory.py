@@ -537,22 +537,28 @@ class Motor_Factory_Operator(bpy.types.Operator,AddObjectHelper):
 
     @classmethod
     def poll(cls, context):
+
         return context.scene is not None
 
     def execute(self, context):
         if  context.selected_objects != [] and context.active_object and \
             ('motor_id' in context.active_object.keys()):  
-            loc_list = self.get_old_loc(context)
-            x = context.active_object.location.x
-            y = context.active_object.location.y
-            z = context.active_object.location.z       
-            self.delete_motor(context)
-            obj = self.create_motor()
-            self.move_motor(obj, loc_list)
-            if self.mf_Combine:
-                obj.location.x=x
-                obj.location.y=y
-            obj.location.z=z
+            obj = context.active_object
+            if self.change:
+                self.change = False
+                
+            else:
+                loc_list = self.get_old_loc(context)
+                x = context.active_object.location.x
+                y = context.active_object.location.y
+                z = context.active_object.location.z       
+                self.delete_motor(context)
+                obj = self.create_motor()
+                self.move_motor(obj, loc_list)
+                if self.mf_Combine:
+                    obj.location.x=x
+                    obj.location.y=y
+                    obj.location.z=z
             
         else:
             obj = self.create_motor()    

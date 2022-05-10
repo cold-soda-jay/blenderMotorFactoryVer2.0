@@ -114,7 +114,6 @@ if __name__ == "__main__":
         st = time.time()                                                                                               
 
         for i in range(1,num+1):
-            #print('=============== Generate Motor %s/%s==================\n'%(str(i),num))     
             percent = (i-1)/num 
             print('\r',
               '[Generating Motor %s/%s '%(str(i),num) + '#' * int(percent * 30) + '>' + '%.2f'%(percent * 100) + '%' + ' ' * (
@@ -122,9 +121,8 @@ if __name__ == "__main__":
               end=' ]', flush=True)                                                                                         
             os.system(f'blender -b --python \"{file_path}\" -- asd >>{save_path}/generation.log 2>&1 ')
         print('\r',
-              '[Generate Motor %s/%s '%(num,num) + '#' * int(1 * 30) + '>' + '%.2f'%(1 * 100) + '%' + ' ' * (
+              '[Generating Motor %s/%s '%(num,num) + '#' * int(1 * 30) + '>' + '%.2f'%(1 * 100) + '%' + ' ' * (
                   30 - int(1 * 30)), flush=True)
-            #print('=============== Generate %s Motor Success ==========\n'%str(i))  
                                                                                         
         end =  time.time()
         print('\n\n[Finish Generation in %.2f Seconds]\n'%(end-st)) 

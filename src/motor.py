@@ -791,8 +791,8 @@ class Type_A(Motor_Creator):
                     self.l_bolt_list=[bolt_position_angle_1, bolt_position_angle_2, bolt_position_angle_3]
                 
             x_bolt_1, z_bolt_1 = self.rotate_around_point((x_large,z_large),
-                                                          bolt_position_angle_1,
-                                                          (x_bolt_init,z_bolt_init))
+                                                            bolt_position_angle_1,
+                                                            (x_bolt_init,z_bolt_init))
             x_bolt_2, z_bolt_2 = self.rotate_around_point((x_large,z_large),
                                                           bolt_position_angle_2,
                                                           (x_bolt_init,z_bolt_init))
@@ -1040,6 +1040,7 @@ class Type_A(Motor_Creator):
             angle_5 = 5
             s_length_5 = 4.5
             s_length_2 = 4.5
+            
 
 
 
@@ -1072,10 +1073,15 @@ class Type_A(Motor_Creator):
         p3x = p1x + s_length_2 * math.sin(radians(angle_1))
         p3z = p1z - s_length_2 * math.cos(radians(angle_1))
 
+
         #p3hx = p3x - s_length_3 * math.sin(radians(angle_2))
         #p3hz = p3z - s_length_3 * math.cos(radians(angle_2))
-        p3hx = p3x
-        p3hz = p3z - 1.5
+        if self.ex_type == 'mf_Extension_Type_2':
+            p3hx = p3x
+            p3hz = p3z - 1.5
+        elif self.ex_type == 'mf_Extension_Type_1':
+            p3hx = p3x - s_length_3 * math.sin(radians(angle_2))
+            p3hz = p3z - s_length_3 * math.cos(radians(angle_2))
 
         p4x = p2x + s_length_4 * math.sin(radians(angle_5))
         p4z = p2z - s_length_4 * math.cos(radians(angle_5))

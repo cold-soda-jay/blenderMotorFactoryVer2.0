@@ -2,3 +2,5 @@
 src/__pycache__/
 
 .vscode/settings.json
+
+src/PIL

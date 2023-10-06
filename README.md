@@ -4,6 +4,9 @@ This is an blender addon which can create motor. We parameterized many features 
 
 **This is an extended version of** [Blender Mortor Factory](https://github.com/cold-soda-jay/blenderMotorFactory). The main different between two version is that in this version the inner parts of motor will also be generated. Including gears and rotor.
 
+**Related publications**:
+1. [MotorFactory: A Blender Add-on for Large Dataset Generation of Small Electric Motors](https://doi.org/10.1016/j.procir.2022.02.168)
+2. [SynMotor: A Benchmark Suite for Object Attribute Regression and Multi-task Learning](https://arxiv.org/abs/2301.05027)
 
 ## 1. Installation
 
